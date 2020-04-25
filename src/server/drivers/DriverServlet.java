@@ -74,6 +74,10 @@ public class DriverServlet extends HttpServlet {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.findById(driver_id);
 			writeText(response, gson.toJson(driver));
+		} else if (action.equals("getInformation")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			Driver driver = driverDao.getInformation(driver_id);
+			writeText(response, gson.toJson(driver));
 		} else if (action.equals("getLocation")){
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getLocation(driver_id);

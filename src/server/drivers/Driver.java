@@ -8,6 +8,13 @@ public class Driver {
 	private double driver_longitude;
     private double driver_latitude;
 	
+	public Driver(int driver_id, String driver_name, String driver_phone) {
+		super();
+		this.driver_id = driver_id;
+		this.driver_name = driver_name;
+		this.driver_phone = driver_phone;
+	}
+
 	public Driver(int driver_id, double driver_longitude, double driver_latitude) {
 		this.driver_id = driver_id;
 		this.driver_longitude = driver_longitude;

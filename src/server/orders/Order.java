@@ -13,12 +13,11 @@ public class Order {
 		this.order_id = order_id;
 	}
 	
-	
 	public Order(int order_id, double customer_score) {
 		this.order_id = order_id;
 		this.customer_score = customer_score;
 	}
-
+	
 	public Order(String order_start, String order_end) {
 		this.order_start = order_start;
 	    this.order_end = order_end;

@@ -114,6 +114,28 @@ public class DriverDaoMySqlImpl implements DriverDao{
 	}
 	
 	@Override
+	public Driver getInformation(int driver_id) {
+		String sql = "SELECT driver_name, driver_phone FROM Driver WHERE driver_id = ?;";
+		Driver driver = null;
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, driver_id);
+			/* 當Statement關閉，ResultSet也會自動關閉，
+			 * 可以不需要將ResultSet宣告置入try with resources小括號內，參看ResultSet說明
+			 */
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				String driver_name = rs.getString(1);
+				String driver_phone = rs.getString(2);
+				driver = new Driver(driver_id, driver_name, driver_phone);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return driver;
+	}
+	
+	@Override
 	public List<Driver> getAll() {
 		String sql = "SELECT driver_id, driver_name, driver_phone, driver_status " 
 				+ "FROM Driver;";

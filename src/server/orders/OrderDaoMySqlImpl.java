@@ -57,6 +57,23 @@ public class OrderDaoMySqlImpl implements OrderDao{
 	}
 	
 	@Override
+	public int updateDriver_score(Order2 order2) {
+		int count = 0;
+		String sql = "";
+			sql = "UPDATE Order_detail SET driver_score = ?" 
+					+ " WHERE order_id = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setDouble(1, order2.getDriver_score());
+			ps.setInt(2, order2.getOrder_id());
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return count;
+	}
+	
+	@Override
 	public int getOrderId(int driver_id) {
 		String sql = "select max(order_id)from Order_detail " + 
 				"where order_time<=\"2030-03-29 19:30:36\" AND driver_id = ? " + 

@@ -59,6 +59,13 @@ public class OrderServlet extends HttpServlet {
 				count = orderDao.updateCustomer_score(order);
 			}
 			writeText(response, String.valueOf(count));
+		} else if(action.equals("driver_scoreUpdate")) {
+			String orderJson = jsonObject.get("order").getAsString();
+			System.out.println("orderJson = " + orderJson);
+			Order2 order2 = gson.fromJson(orderJson, Order2.class);
+			int count = 0;
+			count = orderDao.updateDriver_score(order2);
+			writeText(response, String.valueOf(count));
 		} else if (action.equals("findById")) {
 			int order_id = jsonObject.get("order_id").getAsInt();
 			Order order = orderDao.findById(order_id);
