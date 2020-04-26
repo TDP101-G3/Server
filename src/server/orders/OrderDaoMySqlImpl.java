@@ -40,6 +40,64 @@ public class OrderDaoMySqlImpl implements OrderDao{
 	}
 	
 	@Override
+	public Order getCustomer_score(int customer_id) {
+		String sql = "SELECT customer_score, driver_score FROM Order_detail WHERE customer_id = ?;";
+		Order order = null;
+		double customer_score = 0,driver_score = 0;
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, customer_id);
+			/* 當Statement關閉，ResultSet也會自動關閉，
+			 * 可以不需要將ResultSet宣告置入try with resources小括號內，參看ResultSet說明
+			 */
+			int c = 0;
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				customer_score += rs.getDouble(1);
+				driver_score += rs.getDouble(2);
+				if(rs.getDouble(1) != 0) {
+					c++;
+				}
+			}
+			customer_score = customer_score/c;
+			driver_score = driver_score/c;
+			order = new Order(customer_id,customer_score, driver_score);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return order;
+	}
+	
+	@Override
+	public Order2 getDriver_score(int driver_id) {
+		String sql = "SELECT customer_score, driver_score FROM Order_detail WHERE driver_id = ?;";
+		Order2 order2 = null;
+		double customer_score = 0,driver_score = 0;
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, driver_id);
+			/* 當Statement關閉，ResultSet也會自動關閉，
+			 * 可以不需要將ResultSet宣告置入try with resources小括號內，參看ResultSet說明
+			 */
+			int c = 0;
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				customer_score += rs.getDouble(1);
+				driver_score += rs.getDouble(2);
+				if(rs.getDouble(2) != 0) {
+					c++;
+				}
+			}
+			customer_score = customer_score/c;
+			driver_score = driver_score/c;
+			order2 = new Order2(driver_id, driver_score, customer_score);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return order2;
+	}
+	
+	@Override
 	public int updateCustomer_score(Order order) {
 		int count = 0;
 		String sql = "";

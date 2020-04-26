@@ -18,6 +18,12 @@ public class Order {
 		this.customer_score = customer_score;
 	}
 	
+	public Order(int customer_id, double customer_score, double driver_score) {
+		this.customer_id = customer_id;
+		this.customer_score = customer_score;
+		this.driver_score = driver_score;
+	}
+	
 	public Order(String order_start, String order_end) {
 		this.order_start = order_start;
 	    this.order_end = order_end;

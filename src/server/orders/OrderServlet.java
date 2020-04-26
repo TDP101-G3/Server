@@ -70,7 +70,15 @@ public class OrderServlet extends HttpServlet {
 			int order_id = jsonObject.get("order_id").getAsInt();
 			Order order = orderDao.findById(order_id);
 			writeText(response, gson.toJson(order));
-		}else {
+		} else if(action.equals("getCustomer_score")) {
+			int customer_id = jsonObject.get("customer_id").getAsInt();
+			Order order = orderDao.getCustomer_score(customer_id);
+			writeText(response, gson.toJson(order));
+		} else if(action.equals("getDriver_score")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			Order2 order2 = orderDao.getDriver_score(driver_id);
+			writeText(response, gson.toJson(order2));
+		} else {
 			writeText(response, "");
 		}
 	}

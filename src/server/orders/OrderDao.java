@@ -16,4 +16,8 @@ public interface OrderDao {
 	int updateCustomer_score(Order order);
 	
 	int updateDriver_score(Order2 order2);
+	
+	Order getCustomer_score(int customer_id);
+	
+	Order2 getDriver_score(int driver_id);
 }
