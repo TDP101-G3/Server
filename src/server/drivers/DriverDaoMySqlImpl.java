@@ -137,7 +137,7 @@ public class DriverDaoMySqlImpl implements DriverDao{
 	
 	@Override
 	public List<Driver> getAll() {
-		String sql = "SELECT driver_id, driver_name, driver_phone, driver_status " 
+		String sql = "SELECT driver_id, driver_name, driver_phone, driver_status,driver_longitude,driver_latitude  " 
 				+ "FROM Driver;";
 		List<Driver> driverList = new ArrayList<Driver>();
 		try (Connection connection = dataSource.getConnection();
@@ -148,7 +148,9 @@ public class DriverDaoMySqlImpl implements DriverDao{
 				String driver_name = rs.getString(2);
 				String driver_phone = rs.getString(3);
 				int driver_status = rs.getInt(4);
-				Driver driver = new Driver(driver_id, driver_name, driver_phone, driver_status);
+				double driver_longitude = rs.getDouble(5);
+				double driver_latitude = rs.getDouble(6);
+				Driver driver = new Driver(driver_id, driver_name, driver_phone, driver_status,driver_longitude,driver_latitude);
 				driverList.add(driver);
 			}
 			return driverList;

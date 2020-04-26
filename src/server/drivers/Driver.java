@@ -28,6 +28,16 @@ public class Driver {
 		this.driver_status = driver_status;
 	}
 
+	public Driver(int driver_id, String driver_name, String driver_phone, int driver_status, double driver_longitude,
+			double driver_latitude) {
+		this.driver_id = driver_id;
+		this.driver_name = driver_name;
+		this.driver_phone = driver_phone;
+		this.driver_status = driver_status;
+		this.driver_longitude = driver_longitude;
+		this.driver_latitude = driver_latitude;
+	}
+
 	public int getDriver_id() {
 		return driver_id;
 	}
