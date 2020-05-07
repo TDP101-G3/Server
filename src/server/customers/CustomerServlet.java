@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -65,6 +66,42 @@ public class CustomerServlet extends HttpServlet {
 			double startLongitude = jsonObject.get("startLongitude").getAsDouble();
 			int driver_id = customerDao.matchDriver(startLatitude,startLongitude);
 			writeText(response, gson.toJson(driver_id));
+		} else if (action.equals("getInsurances")) {
+			int customer_id = jsonObject.get("customer_id").getAsInt();
+			List<Insurance> insurances = customerDao.getInsurances(customer_id);
+			writeText(response, gson.toJson(insurances));
+		} else if (action.equals("updateCustomer")) {
+			String customerJson = jsonObject.get("customer").getAsString();
+			Customer customer = gson.fromJson(customerJson, Customer.class);
+            byte[] image = null;
+			// 檢查是否有上傳圖片
+//			if (jsonObject.get("imageBase64") != null) {
+//				String imageBase64 = jsonObject.get("imageBase64").getAsString();
+//				if (imageBase64 != null && !imageBase64.isEmpty()) {
+//					image = Base64.getMimeDecoder().decode(imageBase64);
+//				}
+//			}
+			int count = 0;
+			count = customerDao.updateCustomer(customer, image);
+			writeText(response, String.valueOf(count));
+			
+		}else if (action.equals("updateCar")) {
+			String customerJson = jsonObject.get("customer").getAsString();
+			Customer customer = gson.fromJson(customerJson, Customer.class);
+			int count = 0;
+			count = customerDao.updateCar(customer);
+			writeText(response, String.valueOf(count));
+			
+		}else if (action.equals("updateInsurance")) {
+			String insuranceJson = jsonObject.get("insurance").getAsString();
+			Insurance insurance = gson.fromJson(insuranceJson, Insurance.class);
+			String imageBase64 = jsonObject.get("imageBase64").getAsString();
+			byte[] image = Base64.getMimeDecoder().decode(imageBase64);
+			int customer_id = jsonObject.get("customer_id").getAsInt();
+			System.out.println("updateInsurance customer_id: " + customer_id);
+			int count = 0;
+			count = customerDao.updateInsurance(insurance, customer_id, image);
+			writeText(response, String.valueOf(count));
 		}else {
 			writeText(response, "");
 		}

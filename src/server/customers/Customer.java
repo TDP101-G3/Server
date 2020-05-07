@@ -4,15 +4,17 @@ public class Customer {
 	private int customer_id;
 	private String customer_name;
 	private String customer_phone;
+	private String customer_email;
 	private String customer_number_plate;
 	private String customer_car_model;
 	private String customer_car_color;
 	
-	public Customer(int customer_id, String customer_name, String customer_phone, String customer_number_plate,
+	public Customer(int customer_id, String customer_name, String customer_phone, String customer_email, String customer_number_plate,
 			String customer_car_model, String customer_car_color) {
 		this.customer_id = customer_id;
 		this.customer_name = customer_name;
 		this.customer_phone = customer_phone;
+		this.customer_email = customer_email;
 		this.customer_number_plate = customer_number_plate;
 		this.customer_car_model = customer_car_model;
 		this.customer_car_color = customer_car_color;
@@ -42,6 +44,14 @@ public class Customer {
 		this.customer_phone = customer_phone;
 	}
 
+	public String getCustomer_email() {
+		return customer_email;
+	}
+
+	public void setCustomer_email(String customer_email) {
+		this.customer_email = customer_email;
+	}
+	
 	public String getCustomer_number_plate() {
 		return customer_number_plate;
 	}
