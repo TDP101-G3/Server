@@ -83,6 +83,11 @@ public class DriverServlet extends HttpServlet {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getLocation(driver_id);
 			writeText(response, gson.toJson(driver));
+		} else if (action.equals("loginCheck")){
+			String driver_email = jsonObject.get("email").getAsString();
+			String driver_password = jsonObject.get("password").getAsString();
+		    int driver = driverDao.loginCheck(driver_email,driver_password);
+			writeText(response, String.valueOf(driver));
 		} else if (action.equals("signUp") || action.equals("spotUpdate")) {// 新增跟更新
 			String driverJson = jsonObject.get("driver").getAsString();
 			System.out.println("driverJson = " + driverJson);
