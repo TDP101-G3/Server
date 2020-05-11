@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 public class ServiceLocator {
 	private Context initalContext;
 
+	//單例個體
 	private static ServiceLocator serviceLocator = new ServiceLocator();
 
 	public static ServiceLocator getInstance() {
