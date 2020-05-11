@@ -17,4 +17,8 @@ public interface DriverDao {
 	List<Driver> getAll();
 	
 	byte[] getImage(int driver_id);
+	
+	int loginCheck (String driver_email, String driver_password);
+	
+	int signUp (Driver driver, byte[] idFront, byte[] idBack, byte[] licenseFront, byte[] licenseBack, byte[] driverSecure);
 }

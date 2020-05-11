@@ -4,10 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.text.ParseException;
 
 import javax.sql.DataSource;
+
 import server.main.ServiceLocator;
 
 public class CustomerDaoMySqlImpl implements CustomerDao{
@@ -36,7 +40,7 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	
 	@Override
 	public Customer findById(int customer_id) {
-		String sql = "SELECT customer_name, customer_phone, customer_number_plate, customer_car_model, customer_car_color FROM Customer WHERE customer_id = ?;";
+		String sql = "SELECT customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color FROM Customer WHERE customer_id = ?;";
 		Customer customer = null;
 		try (Connection connection = dataSource.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql);) {
@@ -48,10 +52,11 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 			if (rs.next()) {
 				String customer_name = rs.getString(1);
 				String customer_phone = rs.getString(2);
-				String customer_number_plate = rs.getString(3);
-				String customer_car_model = rs.getString(4);
-				String customer_car_color = rs.getString(5);
-				customer = new Customer(customer_id, customer_name, customer_phone, customer_number_plate, customer_car_model, customer_car_color);
+				String customer_email = rs.getString(3);
+				String customer_number_plate = rs.getString(4);
+				String customer_car_model = rs.getString(5);
+				String customer_car_color = rs.getString(6);
+				customer = new Customer(customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -61,7 +66,7 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	
 	@Override
 	public List<Customer> getAll() {
-		String sql = "SELECT customer_id, customer_name, customer_phone, customer_number_plate, customer_car_model, customer_car_color " 
+		String sql = "SELECT customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color " 
 				+ "FROM Customer;";
 		List<Customer> customerList = new ArrayList<Customer>();
 		try (Connection connection = dataSource.getConnection();
@@ -71,10 +76,11 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 				int customer_id = rs.getInt(1);
 				String customer_name = rs.getString(2);
 				String customer_phone = rs.getString(3);
-				String customer_number_plate = rs.getString(4);
-				String customer_car_model = rs.getString(5);
-				String customer_car_color = rs.getString(6);
-				Customer customer = new Customer(customer_id, customer_name, customer_phone, customer_number_plate, customer_car_model, customer_car_color);
+				String customer_email = rs.getString(4);
+				String customer_number_plate = rs.getString(5);
+				String customer_car_model = rs.getString(6);
+				String customer_car_color = rs.getString(7);
+				Customer customer = new Customer(customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color);
 				customerList.add(customer);
 			}
 			return customerList;
@@ -119,5 +125,163 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 			e.printStackTrace();
 		} 
 		return driver_id;
+	}
+	
+	public int updateCustomer(Customer customer, byte[] image) {
+		int count = 0;
+		String sql = "";
+		// image為null就不更新image欄位內容
+		if (image != null) {
+			sql = "UPDATE Customer SET customer_name = ?, customer_phone = ?, customer_email = ?, image = ? WHERE customer_id = ?;";
+		} else {
+			sql = "UPDATE Customer SET customer_name = ?, customer_phone = ?, customer_email = ? WHERE customer_id = ?;";
+		}
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, customer.getCustomer_name());
+			ps.setString(2, customer.getCustomer_phone());
+			ps.setString(3, customer.getCustomer_email());
+			if (image != null) {
+				ps.setBytes(4, image);
+				ps.setInt(5, customer.getCustomer_id());
+			} else {
+				ps.setInt(4, customer.getCustomer_id());
+			}
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return count;
+	}
+	
+	public int updateInsurance(Insurance insurance, int customer_id, byte[] image) {
+		int count = 0;
+		String sql = "";
+		String text = insurance.getInsuranceName();
+		if(text.equals("carDamage")) {
+			sql += "UPDATE Customer SET customer_car_insurance = ?, customer_car_insurance_date = ?, customer_car_insurance_confirm = ? WHERE customer_id = ?;";
+		}else if (text.equals("compulsory")) {
+			sql += "UPDATE Customer SET customer_compulsory_insurance = ?, customer_compulsory_insurance_date = ?, customer_compulsory_insurance_confirm = ? WHERE customer_id = ?;";
+		}else if(text.equals("third")) {
+			sql += "UPDATE Customer SET customer_third_insurance = ?, customer_third_insurance_date = ?, customer_third_insurance_confirm = ? WHERE customer_id = ?;";
+		}
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setBytes(1, image);
+			ps.setString(2, insurance.getExpireDate());
+			ps.setInt(3, 0);
+			ps.setInt(4, customer_id);
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return count;
+	}
+	
+	public int updateCar(Customer customer) {
+		int count = 0;
+		String sql = "";
+		sql = "UPDATE Customer SET customer_number_plate = ?, customer_car_model = ?, customer_car_color = ? WHERE customer_id = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, customer.getCustomer_number_plate());
+			ps.setString(2, customer.getCustomer_car_model());
+			ps.setString(3, customer.getCustomer_car_color());
+			ps.setInt(4, customer.getCustomer_id());
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return count;
+	}
+	
+	@Override
+	public List<Insurance> getInsurances(int customer_id) {
+		List<Insurance> insuranceList = new ArrayList<Insurance>();
+		String sql = "SELECT customer_car_insurance, customer_car_insurance_date, customer_car_insurance_confirm, customer_compulsory_insurance, customer_compulsory_insurance_date, customer_compulsory_insurance_confirm, customer_third_insurance, customer_third_insurance_date, customer_third_insurance_confirm FROM Customer WHERE customer_id = ?;";
+		Insurance carDamage = null;
+		Insurance compulsory = null;
+		Insurance thirdParty = null;
+		// 得到今天日期
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date today = new Date();
+		System.out.println("Today: " + today);
+		
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, customer_id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				// 1.車體險
+				byte[] imgCarDamage = rs.getBytes(1);
+				String car_insurance_date = rs.getString(2);
+				// System.out.println("Car Damage Expire Date: " + car_insurance_date);
+				int car_insurance_confirm = rs.getInt(3);  // 人工驗證結果 0未認證 1認證通過 2沒過
+				String car_insurance_situation = "no result";
+		        Date car_insurance_expire = null;
+		        if (car_insurance_date == null) {
+		        	car_insurance_date = "0000-00-00";
+				} 
+		        car_insurance_expire = format.parse(car_insurance_date);
+	        	System.out.println("Car Damage Expire Date: " + car_insurance_expire);
+				// 審核狀態
+				car_insurance_situation = compareDate(car_insurance_confirm, today, car_insurance_expire, imgCarDamage);
+				carDamage = new Insurance(1, "carDamage", car_insurance_date, car_insurance_situation);
+				// 2.強制險
+				byte[] imgCompulsory = rs.getBytes(4);
+				String compulsory_insurance_date = rs.getString(5);
+				int compulsory_insurance_confirm = rs.getInt(6);  // 人工驗證結果 0未認證 1認證通過 2沒過
+				String compulsory_insurance_situation = "no result";
+		        Date compulsory_insurance_expire = null;
+		        if (compulsory_insurance_date == null) {
+		        	compulsory_insurance_date = "0000-00-00";
+				} 
+				compulsory_insurance_expire = format.parse(compulsory_insurance_date);
+				System.out.println("Compulsory Expire Date: " + compulsory_insurance_expire);
+				// 審核狀態
+				compulsory_insurance_situation = compareDate(compulsory_insurance_confirm, today, compulsory_insurance_expire, imgCompulsory);
+				compulsory = new Insurance(2, "compulsory", compulsory_insurance_date, compulsory_insurance_situation);
+				// 3.第三方責任險
+				byte[] imgThirdInsurance = rs.getBytes(7);
+				String third_insurance_date = rs.getString(8);
+				int third_insurance_confirm = rs.getInt(9);  // 人工驗證結果 0未認證 1認證通過 2沒過
+				String third_insurance_situation = "no result";
+		        Date third_insurance_expire = null;
+		        if (third_insurance_date == null) {
+		        	third_insurance_date = "0000-00-00";
+				} 
+				third_insurance_expire = format.parse(third_insurance_date);
+				System.out.println("Third Party Expire Date: " + third_insurance_expire);
+				// 審核狀態
+				third_insurance_situation = compareDate(third_insurance_confirm, today, third_insurance_expire, imgThirdInsurance);
+				thirdParty = new Insurance(3, "third", third_insurance_date, third_insurance_situation);
+				
+				insuranceList.add(carDamage);
+				insuranceList.add(compulsory);
+				insuranceList.add(thirdParty);
+			} return insuranceList;
+		} catch (SQLException | ParseException e) {e.printStackTrace();} 
+		return insuranceList;
+	}
+	// 判斷認證狀態
+	private String compareDate(int confirm, Date today, Date expireDate, byte[] img) {
+		String text = "";
+		if (confirm == 1) {
+			if(expireDate.after(today)) {
+				text = "success"; // 1 認證成功
+			}else {
+				text = "expired"; // 1 已過期
+			}
+			
+		} else if (confirm == 0){
+			if(img == null) {
+				text = "unfinished";  // 0 未認證
+			}else {
+				text = "processing"; // 0 認證中
+			}
+		}else {
+			text = "failed";  // 2 失敗
+		}
+		return text;
 	}
 }

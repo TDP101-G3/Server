@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -22,7 +23,7 @@ import server.main.ImageUtil;
 public class DriverServlet extends HttpServlet {
 	private final static String CONTENT_TYPE = "text/html; charset=utf-8";
 	DriverDao driverDao = null;
-	
+
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8");
 		Gson gson = new Gson();
@@ -63,7 +64,7 @@ public class DriverServlet extends HttpServlet {
 			int count = 0;
 			count = driverDao.update(driver);
 			writeText(response, String.valueOf(count));
-		} else if(action.equals("locationUpdate")) {
+		} else if (action.equals("locationUpdate")) {
 			String driverJson = jsonObject.get("driver").getAsString();
 			System.out.println("driverJson = " + driverJson);
 			Driver driver = gson.fromJson(driverJson, Driver.class);
@@ -78,10 +79,63 @@ public class DriverServlet extends HttpServlet {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getInformation(driver_id);
 			writeText(response, gson.toJson(driver));
-		} else if (action.equals("getLocation")){
+		} else if (action.equals("getLocation")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getLocation(driver_id);
 			writeText(response, gson.toJson(driver));
+		} else if (action.equals("loginCheck")){
+			String driver_email = jsonObject.get("email").getAsString();
+			String driver_password = jsonObject.get("password").getAsString();
+		    int driver = driverDao.loginCheck(driver_email,driver_password);
+			writeText(response, String.valueOf(driver));
+		} else if (action.equals("signUp") || action.equals("spotUpdate")) {// 新增跟更新
+			String driverJson = jsonObject.get("driver").getAsString();
+			System.out.println("driverJson = " + driverJson);
+			Driver driver = gson.fromJson(driverJson, Driver.class);// 一次轉回spot物件
+			byte[] idFront = null;
+			byte[] idBack = null;
+			byte[] licenseFront = null;
+			byte[] licenseBack = null;
+			byte[] driverSecure = null;
+			// 檢查是否有上傳圖片
+			if (jsonObject.get("imageBase64") != null) {// 有圖不是空值
+				String imageBase64 = jsonObject.get("imageBase64").getAsString();// 取出來
+				if (imageBase64 != null && !imageBase64.isEmpty()) {
+					idFront = Base64.getMimeDecoder().decode(imageBase64);// 解析還原，得到byte陣列
+				}
+			}
+			if (jsonObject.get("idBackBase64") != null) {
+				String idBackBase64 = jsonObject.get("idBackBase64").getAsString();
+				if (idBackBase64 != null && !idBackBase64.isEmpty()) {
+					idBack = Base64.getMimeDecoder().decode(idBackBase64);
+				}
+			}
+			if (jsonObject.get("licenseFrontBase64") != null) {
+				String licenseFrontBase64 = jsonObject.get("licenseFrontBase64").getAsString();
+				if (licenseFrontBase64 != null && !licenseFrontBase64.isEmpty()) {
+					licenseFront = Base64.getMimeDecoder().decode(licenseFrontBase64);
+				}
+			}
+			if (jsonObject.get("licenseBackBase64") != null) {
+				String licenseBackBase64 = jsonObject.get("licenseBackBase64").getAsString();
+				if (licenseBackBase64 != null && !licenseBackBase64.isEmpty()) {
+					licenseBack = Base64.getMimeDecoder().decode(licenseBackBase64);
+				}
+			}
+			if (jsonObject.get("driverSecureBase64") != null) {
+				String driverSecureBase64 = jsonObject.get("driverSecureBase64").getAsString();
+				if (driverSecureBase64 != null && !driverSecureBase64.isEmpty()) {
+					driverSecure = Base64.getMimeDecoder().decode(driverSecureBase64);
+				}
+			}
+			int count = 0;
+			if (action.equals("signUp")) {// 新增就呼叫這個方法
+				count = driverDao.signUp(driver, idFront, idBack, licenseFront, licenseBack, driverSecure);
+			} else if (action.equals("spotUpdate")) {// 更新就用這個方法
+//				count = driverDao.update(driver, image);
+			}
+			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
+
 		} else {
 			writeText(response, "");
 		}
@@ -102,5 +156,5 @@ public class DriverServlet extends HttpServlet {
 		List<Driver> drivers = driverDao.getAll();
 		writeText(response, new Gson().toJson(drivers));
 	}
-	
+
 }
