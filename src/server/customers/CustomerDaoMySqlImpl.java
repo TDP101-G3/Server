@@ -12,6 +12,7 @@ import java.text.ParseException;
 
 import javax.sql.DataSource;
 
+import server.drivers.Driver;
 import server.main.ServiceLocator;
 
 public class CustomerDaoMySqlImpl implements CustomerDao{
@@ -66,7 +67,7 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	
 	@Override
 	public List<Customer> getAll() {
-		String sql = "SELECT customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color " 
+		String sql = "SELECT customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color, customer_password " 
 				+ "FROM Customer;";
 		List<Customer> customerList = new ArrayList<Customer>();
 		try (Connection connection = dataSource.getConnection();
@@ -80,7 +81,8 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 				String customer_number_plate = rs.getString(5);
 				String customer_car_model = rs.getString(6);
 				String customer_car_color = rs.getString(7);
-				Customer customer = new Customer(customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color);
+				String customer_password = rs.getString(8);
+				Customer customer = new Customer(customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color, customer_password);
 				customerList.add(customer);
 			}
 			return customerList;
@@ -283,5 +285,74 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 			text = "failed";  // 2 失敗
 		}
 		return text;
+	}
+	
+
+	@Override
+	public int loginCheck(String customer_email, String customer_password) {
+		int count = 0;
+		String email = null;
+		String password = null;
+		String sql = "SELECT customer_email, customer_password " + " FROM Customer WHERE customer_email = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, customer_email);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				email = rs.getString(1);
+				password = rs.getString(2);
+				System.out.println("password");
+				System.out.println(password);
+				System.out.println(email);
+
+			}
+			
+			if (email == null) {
+				return count; // 未註冊
+			}
+
+			if (customer_email.equals(email)) {
+				System.out.println(email);
+				if (customer_password.equals(password)) {
+					System.out.println(password);
+					return count = 1; // 登入成功
+				} else {
+					System.out.println(password);
+					System.out.println(customer_password);
+					return count = 2; // 密碼錯誤
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count; // 系統錯誤
+	}
+
+	@Override
+	public int signUp(Customer customer, byte[] idFront, byte[] idBack, byte[] carDamage, byte[] compulsory, byte[] carThirdParty) {
+		int count = 0;
+		String sql = "INSERT INTO Customer"
+				+ "(customer_name, customer_email, customer_password, customer_phone, customer_number_plate, customer_car_model, customer_car_color,customer_identify_front,customer_identify_back,customer_car_insurance,customer_compulsory_insurance,customer_third_insurance) "
+				+ "VALUES(?, ?, ?, ?, ?, ?, ?,?,?,?,?,?);";
+		try (Connection connection = dataSource.getConnection(); // 拿到連線池中的連線
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, customer.getCustomer_name());
+			ps.setString(2, customer.getCustomer_email());
+			ps.setString(3, customer.getCustomer_password());
+			ps.setString(4, customer.getCustomer_phone());
+			ps.setString(5, customer.getCustomer_number_plate());
+			ps.setString(6, customer.getCustomer_car_model());
+			ps.setString(7, customer.getCustomer_car_color());
+			ps.setBytes(8, idFront);
+			ps.setBytes(9, idBack);
+			ps.setBytes(10, carDamage);
+			ps.setBytes(11, compulsory);
+			ps.setBytes(12, carThirdParty);
+			count = ps.executeUpdate();// 異動結果
+			System.out.println("count: " + count);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
 	}
 }

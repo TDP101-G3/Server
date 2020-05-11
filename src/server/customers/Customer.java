@@ -8,6 +8,7 @@ public class Customer {
 	private String customer_number_plate;
 	private String customer_car_model;
 	private String customer_car_color;
+    private String customer_password;
 	
 	public Customer(int customer_id, String customer_name, String customer_phone, String customer_email, String customer_number_plate,
 			String customer_car_model, String customer_car_color) {
@@ -19,6 +20,28 @@ public class Customer {
 		this.customer_car_model = customer_car_model;
 		this.customer_car_color = customer_car_color;
 	}
+	
+	public Customer(int customer_id, String customer_name, String customer_phone, String customer_email, String customer_number_plate,
+			String customer_car_model, String customer_car_color, String customer_password) {
+		this.customer_id = customer_id;
+		this.customer_name = customer_name;
+		this.customer_phone = customer_phone;
+		this.customer_email = customer_email;
+		this.customer_number_plate = customer_number_plate;
+		this.customer_car_model = customer_car_model;
+		this.customer_car_color = customer_car_color;
+        this.customer_password = customer_password;
+	}
+
+    public Customer(String customer_name, String customer_email, String customer_password, String customer_phone,String customer_number_plate, String customer_car_model,String customer_car_color) {
+        this.customer_name = customer_name;
+        this.customer_phone = customer_phone;
+        this.customer_password = customer_password;
+        this.customer_email = customer_email;
+        this.customer_number_plate = customer_number_plate;
+        this.customer_car_model = customer_car_model;
+        this.customer_car_color = customer_car_color;
+    }
 
 	public int getCustomer_id() {
 		return customer_id;
@@ -50,6 +73,14 @@ public class Customer {
 
 	public void setCustomer_email(String customer_email) {
 		this.customer_email = customer_email;
+	}
+	
+	public String getCustomer_password() {
+		return customer_password;
+	}
+
+	public void setCustomer_password(String customer_password) {
+		this.customer_password = customer_password;
 	}
 	
 	public String getCustomer_number_plate() {

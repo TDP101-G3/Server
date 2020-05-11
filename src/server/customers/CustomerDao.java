@@ -2,6 +2,8 @@ package server.customers;
 
 import java.util.List;
 
+import server.drivers.Driver;
+
 
 public interface CustomerDao {
 
@@ -20,5 +22,9 @@ public interface CustomerDao {
 	int updateCar(Customer customer);
 	
 	int updateInsurance(Insurance insurance, int customer_id, byte[] image);
+	
+	int loginCheck (String customer_email, String customer_password);
+	
+	int signUp (Customer customer, byte[] idFront, byte[] idBack, byte[] carDamage, byte[] compulsory, byte[] carThirdParty);
 
 }

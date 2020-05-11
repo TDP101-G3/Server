@@ -83,12 +83,12 @@ public class DriverServlet extends HttpServlet {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getLocation(driver_id);
 			writeText(response, gson.toJson(driver));
-		} else if (action.equals("loginCheck")){
+		} else if (action.equals("loginCheck")) {
 			String driver_email = jsonObject.get("email").getAsString();
 			String driver_password = jsonObject.get("password").getAsString();
-		    int driver = driverDao.loginCheck(driver_email,driver_password);
+			int driver = driverDao.loginCheck(driver_email, driver_password);
 			writeText(response, String.valueOf(driver));
-		} else if (action.equals("signUp") || action.equals("spotUpdate")) {// 新增跟更新
+		} else if (action.equals("signUp")) {// 新增跟更新
 			String driverJson = jsonObject.get("driver").getAsString();
 			System.out.println("driverJson = " + driverJson);
 			Driver driver = gson.fromJson(driverJson, Driver.class);// 一次轉回spot物件
@@ -129,11 +129,7 @@ public class DriverServlet extends HttpServlet {
 				}
 			}
 			int count = 0;
-			if (action.equals("signUp")) {// 新增就呼叫這個方法
-				count = driverDao.signUp(driver, idFront, idBack, licenseFront, licenseBack, driverSecure);
-			} else if (action.equals("spotUpdate")) {// 更新就用這個方法
-//				count = driverDao.update(driver, image);
-			}
+			count = driverDao.signUp(driver, idFront, idBack, licenseFront, licenseBack, driverSecure);
 			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
 
 		} else {

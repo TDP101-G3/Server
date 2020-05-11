@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import server.drivers.Driver;
 import server.main.ImageUtil;
 
 @SuppressWarnings("serial")
@@ -102,7 +103,57 @@ public class CustomerServlet extends HttpServlet {
 			int count = 0;
 			count = customerDao.updateInsurance(insurance, customer_id, image);
 			writeText(response, String.valueOf(count));
-		}else {
+		}else if (action.equals("loginCheck")) {
+			String customer_email = jsonObject.get("email").getAsString();
+			String customer_password = jsonObject.get("password").getAsString();
+			int count = 0;
+			count = customerDao.loginCheck(customer_email, customer_password);
+			writeText(response, String.valueOf(count));
+		} else if (action.equals("signUp")) {// 新增跟更新
+			String customerJson = jsonObject.get("customer").getAsString();
+			System.out.println("customerJson = " + customerJson);
+			Customer customer = gson.fromJson(customerJson, Customer.class);// 一次轉回spot物件
+			byte[] idFront = null;
+			byte[] idBack = null;
+			byte[] carDamage = null;
+			byte[] compulsory = null;
+			byte[] carThirdParty = null;
+			// 檢查是否有上傳圖片
+			if (jsonObject.get("imageBase64") != null) {// 有圖不是空值
+				String imageBase64 = jsonObject.get("imageBase64").getAsString();// 取出來
+				if (imageBase64 != null && !imageBase64.isEmpty()) {
+					idFront = Base64.getMimeDecoder().decode(imageBase64);// 解析還原，得到byte陣列
+				}
+			}
+			if (jsonObject.get("idBackBase64") != null) {
+				String idBackBase64 = jsonObject.get("idBackBase64").getAsString();
+				if (idBackBase64 != null && !idBackBase64.isEmpty()) {
+					idBack = Base64.getMimeDecoder().decode(idBackBase64);
+				}
+			}
+			if (jsonObject.get("carDamageBase64") != null) {
+				String carDamageBase64 = jsonObject.get("carDamageBase64").getAsString();
+				if (carDamageBase64 != null && !carDamageBase64.isEmpty()) {
+					carDamage = Base64.getMimeDecoder().decode(carDamageBase64);
+				}
+			}
+			if (jsonObject.get("compulsoryBase64") != null) {
+				String compulsoryBase64 = jsonObject.get("compulsoryBase64").getAsString();
+				if (compulsoryBase64 != null && !compulsoryBase64.isEmpty()) {
+					compulsory = Base64.getMimeDecoder().decode(compulsoryBase64);
+				}
+			}
+			if (jsonObject.get("carThirdPartyBase64") != null) {
+				String carThirdPartyBase64 = jsonObject.get("carThirdPartyBase64").getAsString();
+				if (carThirdPartyBase64 != null && !carThirdPartyBase64.isEmpty()) {
+					carThirdParty = Base64.getMimeDecoder().decode(carThirdPartyBase64);
+				}
+			}
+			int count = 0;
+			count = customerDao.signUp(customer, idFront, idBack, carDamage, compulsory, carThirdParty);
+			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
+
+		} else {
 			writeText(response, "");
 		}
 	}
