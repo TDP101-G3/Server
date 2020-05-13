@@ -12,6 +12,11 @@ public class Driver {
 	private String driver_bank_name;
 	private String driver_bank_account;
 	private String driver_bank_code;
+	
+	public Driver(int driver_id, String driver_name) {
+		this.driver_id = driver_id;
+		this.driver_name = driver_name;
+	}
 
 	public Driver(int driver_id, String driver_name, String driver_phone) {
 		super();

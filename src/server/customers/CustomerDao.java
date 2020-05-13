@@ -8,6 +8,8 @@ import server.drivers.Driver;
 public interface CustomerDao {
 
 	Customer findById(int customer_id);
+	
+	Customer getUserInfo(String customer_email);
 
 	List<Customer> getAll();
 	

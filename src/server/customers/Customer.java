@@ -9,6 +9,12 @@ public class Customer {
 	private String customer_car_model;
 	private String customer_car_color;
     private String customer_password;
+    
+    
+	public Customer(int customer_id, String customer_name) {
+		this.customer_id = customer_id;
+		this.customer_name = customer_name;
+	}
 	
 	public Customer(int customer_id, String customer_name, String customer_phone, String customer_email, String customer_number_plate,
 			String customer_car_model, String customer_car_color) {

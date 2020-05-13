@@ -62,6 +62,10 @@ public class CustomerServlet extends HttpServlet {
 			int customer_id = jsonObject.get("customer_id").getAsInt();
 			Customer customer = customerDao.findById(customer_id);
 			writeText(response, gson.toJson(customer));
+		} else if (action.equals("getUserInfo")) {
+			String customer_email = jsonObject.get("email").getAsString();
+			Customer customer = customerDao.getUserInfo(customer_email);
+			writeText(response, gson.toJson(customer));
 		} else if(action.equals("matchDriver")){
 			double startLatitude = jsonObject.get("startLatitude").getAsDouble();
 			double startLongitude = jsonObject.get("startLongitude").getAsDouble();

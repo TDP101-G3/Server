@@ -112,6 +112,25 @@ public class DriverDaoMySqlImpl implements DriverDao {
 		}
 		return driver;
 	}
+	
+	@Override
+	public Driver getUserInfo(String driver_email) {
+		String sql = "SELECT driver_id, driver_name FROM Driver WHERE driver_email = ?;";
+		Driver driver = null;
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, driver_email);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				int driver_id = rs.getInt(1);
+				String driver_name = rs.getString(2);
+				driver = new Driver(driver_id, driver_name);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return driver;
+	}
 
 	@Override
 	public Driver getInformation(int driver_id) {

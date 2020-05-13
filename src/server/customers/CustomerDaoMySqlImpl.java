@@ -66,6 +66,25 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	}
 	
 	@Override
+	public Customer getUserInfo(String customer_email) {
+		String sql = "SELECT customer_id, customer_name FROM Customer WHERE customer_email = ?;";
+		Customer customer = null;
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, customer_email);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				int customer_id = rs.getInt(1);
+				String customer_name = rs.getString(2);
+				customer = new Customer(customer_id, customer_name);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return customer;
+	}
+	
+	@Override
 	public List<Customer> getAll() {
 		String sql = "SELECT customer_id, customer_name, customer_phone, customer_email, customer_number_plate, customer_car_model, customer_car_color, customer_password " 
 				+ "FROM Customer;";

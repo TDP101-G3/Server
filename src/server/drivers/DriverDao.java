@@ -12,6 +12,8 @@ public interface DriverDao {
 
 	Driver findById(int driver_id);
 	
+	Driver getUserInfo(String driver_email);
+	
 	Driver getInformation(int driver_id);
 	
 	List<Driver> getAll();
