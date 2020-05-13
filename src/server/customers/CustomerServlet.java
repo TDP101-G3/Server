@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 
 import server.drivers.Driver;
 import server.main.ImageUtil;
+import server.orders.Order;
 
 @SuppressWarnings("serial")
 @WebServlet("/CustomerServlet")
@@ -153,7 +154,11 @@ public class CustomerServlet extends HttpServlet {
 			count = customerDao.signUp(customer, idFront, idBack, carDamage, compulsory, carThirdParty);
 			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
 
-		} else {
+		} else if(action.equals("getOrders")){
+			int customer_id = jsonObject.get("customer_id").getAsInt();
+			List<Order> orders = customerDao.getOrders(customer_id);
+			writeText(response, gson.toJson(orders));
+		}else {
 			writeText(response, "");
 		}
 	}

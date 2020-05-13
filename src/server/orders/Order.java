@@ -4,10 +4,12 @@ public class Order {
 	private int order_id;
 	private int customer_id;
 	private int driver_id;
+	private String order_time;
 	private String order_start;
 	private String order_end;
 	private double customer_score;
 	private double driver_score;
+	private double order_money;
 	
 	public Order(int order_id) {
 		this.order_id = order_id;
@@ -29,13 +31,22 @@ public class Order {
 	    this.order_end = order_end;
 	}
 	
+	public Order(int order_id, int customer_id, int driver_id, String order_time, String order_start, String order_end, double driver_score, double order_money){
+        this.order_id = order_id;
+        this.customer_id = customer_id;
+        this.driver_id = driver_id;
+        this.order_time = order_time;
+        this.order_start = order_start;
+        this.order_end = order_end;
+        this.driver_score = driver_score;
+        this.order_money = order_money;
+    }
 	public Order(int customer_id, int driver_id, String order_start, String order_end){
         this.customer_id = customer_id;
         this.driver_id = driver_id;
         this.order_start = order_start;
         this.order_end = order_end;
     }
-	
 	
 	public int getOrder_id() {
 		return order_id;
@@ -66,6 +77,12 @@ public class Order {
 	}
 	public void setOrder_end(String order_end) {
 		this.order_end = order_end;
+	}
+	public double getOrder_money() {
+		return order_money;
+	}
+	public void setOrder_money(double order_money) {
+		this.order_money = order_money;
 	}
 	public double getCustomer_score() {
 		return customer_score;
