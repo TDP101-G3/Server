@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 
 import server.drivers.Driver;
 import server.main.ServiceLocator;
+import server.orders.Order;
 
 public class CustomerDaoMySqlImpl implements CustomerDao{
 	DataSource dataSource;
@@ -373,5 +374,32 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 			e.printStackTrace();
 		}
 		return count;
+	}
+	
+	@Override
+	public List<Order> getOrders(int customer_id) {
+		String sql = "SELECT order_id, driver_id, order_time, order_start, order_end, driver_score, order_money " 
+				+ "FROM Order_detail WHERE customer_id = ?;";
+		List<Order> orderList = new ArrayList<Order>();
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, customer_id);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				int order_id = rs.getInt(1);
+				int driver_id = rs.getInt(2);
+				String order_time = rs.getString(3);
+				String order_start = rs.getString(4);
+				String order_end = rs.getString(5);
+				double driver_score = rs.getDouble(6);
+				double order_money = rs.getDouble(7);
+				Order order = new Order(order_id, customer_id, driver_id, order_time, order_start, order_end, driver_score, order_money);
+				orderList.add(order);
+			}
+			return orderList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return orderList;
 	}
 }

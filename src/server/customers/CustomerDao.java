@@ -3,6 +3,7 @@ package server.customers;
 import java.util.List;
 
 import server.drivers.Driver;
+import server.orders.Order;
 
 
 public interface CustomerDao {
@@ -14,6 +15,8 @@ public interface CustomerDao {
 	List<Customer> getAll();
 	
 	List<Insurance> getInsurances(int customer_id);
+	
+	List<Order> getOrders(int customer_id);
 
 	byte[] getImage(int customer_id);
 	
