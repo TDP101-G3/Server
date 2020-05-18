@@ -149,26 +149,17 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 		return driver_id;
 	}
 	
-	public int updateCustomer(Customer customer, byte[] image) {
+	public int updateCustomer(Customer customer) {
 		int count = 0;
-		String sql = "";
-		// image為null就不更新image欄位內容
-		if (image != null) {
-			sql = "UPDATE Customer SET customer_name = ?, customer_phone = ?, customer_email = ?, image = ? WHERE customer_id = ?;";
-		} else {
-			sql = "UPDATE Customer SET customer_name = ?, customer_phone = ?, customer_email = ? WHERE customer_id = ?;";
-		}
+		String sql = "";	
+		sql = "UPDATE Customer SET customer_name = ?, customer_phone = ?, customer_email = ? WHERE customer_id = ?;";
+		
 		try (Connection connection = dataSource.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql);) {
 			ps.setString(1, customer.getCustomer_name());
 			ps.setString(2, customer.getCustomer_phone());
 			ps.setString(3, customer.getCustomer_email());
-			if (image != null) {
-				ps.setBytes(4, image);
-				ps.setInt(5, customer.getCustomer_id());
-			} else {
-				ps.setInt(4, customer.getCustomer_id());
-			}
+			ps.setInt(4, customer.getCustomer_id());
 			count = ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -221,13 +212,7 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	public List<Insurance> getInsurances(int customer_id) {
 		List<Insurance> insuranceList = new ArrayList<Insurance>();
 		String sql = "SELECT customer_car_insurance, customer_car_insurance_date, customer_car_insurance_confirm, customer_compulsory_insurance, customer_compulsory_insurance_date, customer_compulsory_insurance_confirm, customer_third_insurance, customer_third_insurance_date, customer_third_insurance_confirm FROM Customer WHERE customer_id = ?;";
-		Insurance carDamage = null;
-		Insurance compulsory = null;
-		Insurance thirdParty = null;
-		// 得到今天日期
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Date today = new Date();
-		System.out.println("Today: " + today);
+		Insurance carDamage = null, compulsory = null, thirdParty = null;
 		
 		try (Connection connection = dataSource.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql);) {
@@ -237,45 +222,25 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 				// 1.車體險
 				byte[] imgCarDamage = rs.getBytes(1);
 				String car_insurance_date = rs.getString(2);
-				// System.out.println("Car Damage Expire Date: " + car_insurance_date);
 				int car_insurance_confirm = rs.getInt(3);  // 人工驗證結果 0未認證 1認證通過 2沒過
-				String car_insurance_situation = "no result";
-		        Date car_insurance_expire = null;
-		        if (car_insurance_date == null) {
-		        	car_insurance_date = "0000-00-00";
-				} 
-		        car_insurance_expire = format.parse(car_insurance_date);
-	        	System.out.println("Car Damage Expire Date: " + car_insurance_expire);
-				// 審核狀態
-				car_insurance_situation = compareDate(car_insurance_confirm, today, car_insurance_expire, imgCarDamage);
+	        	// 審核狀態
+				String car_insurance_situation = compareDate(car_insurance_confirm, car_insurance_date, imgCarDamage);
 				carDamage = new Insurance(1, "carDamage", car_insurance_date, car_insurance_situation);
+				
 				// 2.強制險
 				byte[] imgCompulsory = rs.getBytes(4);
 				String compulsory_insurance_date = rs.getString(5);
 				int compulsory_insurance_confirm = rs.getInt(6);  // 人工驗證結果 0未認證 1認證通過 2沒過
-				String compulsory_insurance_situation = "no result";
-		        Date compulsory_insurance_expire = null;
-		        if (compulsory_insurance_date == null) {
-		        	compulsory_insurance_date = "0000-00-00";
-				} 
-				compulsory_insurance_expire = format.parse(compulsory_insurance_date);
-				System.out.println("Compulsory Expire Date: " + compulsory_insurance_expire);
 				// 審核狀態
-				compulsory_insurance_situation = compareDate(compulsory_insurance_confirm, today, compulsory_insurance_expire, imgCompulsory);
+				String compulsory_insurance_situation = compareDate(compulsory_insurance_confirm, compulsory_insurance_date, imgCompulsory);
 				compulsory = new Insurance(2, "compulsory", compulsory_insurance_date, compulsory_insurance_situation);
+				
 				// 3.第三方責任險
 				byte[] imgThirdInsurance = rs.getBytes(7);
 				String third_insurance_date = rs.getString(8);
 				int third_insurance_confirm = rs.getInt(9);  // 人工驗證結果 0未認證 1認證通過 2沒過
-				String third_insurance_situation = "no result";
-		        Date third_insurance_expire = null;
-		        if (third_insurance_date == null) {
-		        	third_insurance_date = "0000-00-00";
-				} 
-				third_insurance_expire = format.parse(third_insurance_date);
-				System.out.println("Third Party Expire Date: " + third_insurance_expire);
 				// 審核狀態
-				third_insurance_situation = compareDate(third_insurance_confirm, today, third_insurance_expire, imgThirdInsurance);
+				String third_insurance_situation = compareDate(third_insurance_confirm, third_insurance_date, imgThirdInsurance);
 				thirdParty = new Insurance(3, "third", third_insurance_date, third_insurance_situation);
 				
 				insuranceList.add(carDamage);
@@ -286,8 +251,17 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 		return insuranceList;
 	}
 	// 判斷認證狀態
-	private String compareDate(int confirm, Date today, Date expireDate, byte[] img) {
+	private String compareDate(int confirm, String date, byte[] img) throws ParseException {
 		String text = "";
+		if (date == null) {
+        	date = "2000-01-01";
+		} 
+		// 得到今天日期
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date today = new Date();
+		Date expireDate = null;
+        
+        expireDate = format.parse(date);
 		if (confirm == 1) {
 			if(expireDate.after(today)) {
 				text = "success"; // 1 認證成功
@@ -378,7 +352,7 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	
 	@Override
 	public List<Order> getOrders(int customer_id) {
-		String sql = "SELECT order_id, driver_id, order_time, order_start, order_end, driver_score, order_money " 
+		String sql = "SELECT order_id, driver_id, order_time, order_start, order_end, driver_score, customer_score, order_money " 
 				+ "FROM Order_detail WHERE customer_id = ?;";
 		List<Order> orderList = new ArrayList<Order>();
 		try (Connection connection = dataSource.getConnection();
@@ -392,10 +366,11 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 				String order_start = rs.getString(4);
 				String order_end = rs.getString(5);
 				double driver_score = rs.getDouble(6);
-				double order_money = rs.getDouble(7);
-				Order order = new Order(order_id, customer_id, driver_id, order_time, order_start, order_end, driver_score, order_money);
+				double customer_score = rs.getDouble(7);
+				double order_money = rs.getDouble(8);
+				Order order = new Order(order_id, customer_id, driver_id, order_time, order_start, order_end, driver_score, customer_score, order_money);
 				orderList.add(order);
-			}
+			} 
 			return orderList;
 		} catch (SQLException e) {
 			e.printStackTrace();

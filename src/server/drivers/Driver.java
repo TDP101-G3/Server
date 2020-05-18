@@ -37,6 +37,13 @@ public class Driver {
 		this.driver_phone = driver_phone;
 		this.driver_status = driver_status;
 	}
+	
+	public Driver(int driver_id, String driver_name, String driver_phone, String driver_email) {
+        this.driver_id = driver_id;
+        this.driver_name = driver_name;
+        this.driver_phone = driver_phone;
+        this.driver_email = driver_email;
+    }
 
 	public Driver(int driver_id, String driver_name, String driver_phone, int driver_status, double driver_longitude,
 			double driver_latitude) {

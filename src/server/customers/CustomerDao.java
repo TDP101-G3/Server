@@ -22,7 +22,7 @@ public interface CustomerDao {
 	
 	int matchDriver(double startLatitude,double startLongitude);
 	
-	int updateCustomer(Customer customer, byte[] image);
+	int updateCustomer(Customer customer);
 	
 	int updateCar(Customer customer);
 	

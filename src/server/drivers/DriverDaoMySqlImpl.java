@@ -4,12 +4,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import server.customers.Customer;
+import server.customers.Insurance;
 import server.main.ServiceLocator;
+import server.orders.Order;
 
 public class DriverDaoMySqlImpl implements DriverDao {
 	DataSource dataSource;
@@ -246,5 +252,165 @@ public class DriverDaoMySqlImpl implements DriverDao {
 			e.printStackTrace();
 		}
 		return count;
+	}
+	
+	@Override
+	public List<Order> getOrders(int driver_id) {
+		String sql = "SELECT order_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, order_money " 
+				+ "FROM Order_detail WHERE driver_id = ?;";
+		List<Order> orderList = new ArrayList<Order>();
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, driver_id);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				int order_id = rs.getInt(1);
+				int customer_id = rs.getInt(2);
+				String order_time = rs.getString(3);
+				String order_start = rs.getString(4);
+				String order_end = rs.getString(5);
+				double driver_score = rs.getDouble(6);
+				double customer_score = rs.getDouble(7);
+				double order_money = rs.getDouble(8);
+				Order order = new Order(order_id, customer_id, driver_id, order_time, order_start, order_end, driver_score, customer_score, order_money);
+				orderList.add(order);
+			}
+			return orderList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return orderList;
+	}
+	
+	@Override
+	public int updateUserData (Driver driver) {
+		int count = 0;
+		String sql = "";	
+		sql = "UPDATE Driver SET driver_name = ?, driver_phone = ?, driver_email = ? WHERE driver_id = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, driver.getDriver_name());
+			ps.setString(2, driver.getDriver_phone());
+			ps.setString(3, driver.getDriver_email());
+			ps.setInt(4, driver.getDriver_id());
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return count;
+	}
+	
+	@Override
+	public int updateUserPhoto (int driver_id, byte[] userPhoto) {
+		int count = 0;
+		String sql = "";
+		sql = "UPDATE Driver SET driver_photo = ? WHERE driver_id = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setBytes(1, userPhoto);
+			ps.setInt(2, driver_id);
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	@Override
+	public int updateInsurance(int driver_id, byte[] insurancePhoto, String expireDate) {
+		int count = 0;
+		String sql = "";
+		System.out.println("update insurance expireDate: " + expireDate);
+		sql = "UPDATE Driver SET driver_liability_insurance = ?, driver_liability_insurance_date = ? WHERE driver_id = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setBytes(1, insurancePhoto);
+			ps.setString(2, expireDate);
+			ps.setInt(3, driver_id);
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	@Override
+	public int updateTwoPhoto(int driver_id, byte[] imageFront, byte[] imageBack, String action) {
+		int count = 0;
+		String sql = "";
+		if (action.equals("updateId")) {
+			sql = "UPDATE Driver SET driver_identify_front = ?, driver_identify_back = ? WHERE driver_id = ?;";
+		} else if (action.equals("updateDriverLicence")) {
+			sql = "UPDATE Driver SET driver_license_front = ?, driver_license_back = ? WHERE driver_id = ?;";
+		} 
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setBytes(1, imageFront);
+			ps.setBytes(2, imageBack);
+			ps.setInt(3, driver_id);
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	@Override
+	public String[] getStatus(int driver_id, String[] status) {
+		String sql = "SELECT driver_identify_front, driver_identify_back, driver_license_front, driver_license_back, driver_liability_insurance, driver_liability_insurance_date FROM Driver WHERE driver_id = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, driver_id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				byte[] identify_front = rs.getBytes(1);
+				byte[] identify_back = rs.getBytes(2);
+				byte[] license_front = rs.getBytes(3);
+				byte[] license_back = rs.getBytes(4);
+				byte[] insurance = rs.getBytes(5);
+				String expireDate = rs.getString(6);
+				if( identify_front != null && identify_back != null ) {
+					status[0] = "success";
+				} else {
+					status[0] = "unfinished";
+				}
+				if( license_front != null && license_back != null ) {
+					status[1] = "success";
+				} else {
+					status[1] = "unfinished";
+				}
+				if( insurance != null && expireDate != null ) {
+					status[2] = "success";
+					status[3] = expireDate;
+				} else {
+					status[2] = "unfinished";
+				}
+				
+			} return status;
+		} catch (SQLException e) {e.printStackTrace();} 
+		return status;
+	}
+	
+	@Override
+	public Driver findUserById(int driver_id) {
+		String sql = "SELECT driver_name, driver_phone, driver_email FROM Driver WHERE driver_id = ?;";
+		Driver driver = null;
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, driver_id);
+			/* 當Statement關閉，ResultSet也會自動關閉，
+			 * 可以不需要將ResultSet宣告置入try with resources小括號內，參看ResultSet說明
+			 */
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				String driver_name = rs.getString(1);
+				String driver_phone = rs.getString(2);
+				String driver_email = rs.getString(3);
+				driver = new Driver(driver_id, driver_name, driver_phone, driver_email);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return driver;
 	}
 }

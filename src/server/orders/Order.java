@@ -31,7 +31,7 @@ public class Order {
 	    this.order_end = order_end;
 	}
 	
-	public Order(int order_id, int customer_id, int driver_id, String order_time, String order_start, String order_end, double driver_score, double order_money){
+	public Order(int order_id, int customer_id, int driver_id, String order_time, String order_start, String order_end, double driver_score, double customer_score, double order_money){
         this.order_id = order_id;
         this.customer_id = customer_id;
         this.driver_id = driver_id;
@@ -39,8 +39,11 @@ public class Order {
         this.order_start = order_start;
         this.order_end = order_end;
         this.driver_score = driver_score;
+        this.customer_score = customer_score;
         this.order_money = order_money;
     }
+	
+	
 	public Order(int customer_id, int driver_id, String order_start, String order_end){
         this.customer_id = customer_id;
         this.driver_id = driver_id;

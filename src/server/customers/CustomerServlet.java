@@ -79,18 +79,9 @@ public class CustomerServlet extends HttpServlet {
 		} else if (action.equals("updateCustomer")) {
 			String customerJson = jsonObject.get("customer").getAsString();
 			Customer customer = gson.fromJson(customerJson, Customer.class);
-            byte[] image = null;
-			// 檢查是否有上傳圖片
-//			if (jsonObject.get("imageBase64") != null) {
-//				String imageBase64 = jsonObject.get("imageBase64").getAsString();
-//				if (imageBase64 != null && !imageBase64.isEmpty()) {
-//					image = Base64.getMimeDecoder().decode(imageBase64);
-//				}
-//			}
 			int count = 0;
-			count = customerDao.updateCustomer(customer, image);
+			count = customerDao.updateCustomer(customer);
 			writeText(response, String.valueOf(count));
-			
 		}else if (action.equals("updateCar")) {
 			String customerJson = jsonObject.get("customer").getAsString();
 			Customer customer = gson.fromJson(customerJson, Customer.class);

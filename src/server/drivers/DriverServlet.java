@@ -16,7 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import server.customers.Customer;
 import server.main.ImageUtil;
+import server.orders.Order;
 
 @SuppressWarnings("serial")
 @WebServlet("/DriverServlet")
@@ -136,6 +138,59 @@ public class DriverServlet extends HttpServlet {
 			count = driverDao.signUp(driver, idFront, idBack, licenseFront, licenseBack, driverSecure);
 			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
 
+		} else if(action.equals("getOrders")){
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			List<Order> orders = driverDao.getOrders(driver_id);
+			writeText(response, gson.toJson(orders));
+		}  else if(action.equals("updateUserData")) {
+			String driverJson = jsonObject.get("driver").getAsString();
+			Driver driver = gson.fromJson(driverJson, Driver.class);
+			int count = 0;
+			count = driverDao.updateUserData(driver);
+			writeText(response, String.valueOf(count));
+		} else if(action.equals("updateUserPhoto")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			String image = jsonObject.get("imageBase64").getAsString();
+			byte[] userPhoto = null;
+			if (image != null && !image.isEmpty()) {
+				userPhoto = Base64.getMimeDecoder().decode(image);
+			}
+			int count = 0;
+			count = driverDao.updateUserPhoto(driver_id, userPhoto);
+			writeText(response, String.valueOf(count));
+		}else if(action.equals("updateInsurance")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			String image = jsonObject.get("imageBase64").getAsString();
+			String expireDate = jsonObject.get("expireDate").getAsString();
+			byte[] insurancePhoto = null;
+			if (image != null && !image.isEmpty()) {
+				insurancePhoto = Base64.getMimeDecoder().decode(image);
+			}
+			int count = 0;
+			count = driverDao.updateInsurance(driver_id, insurancePhoto, expireDate);
+			writeText(response, String.valueOf(count));
+		} else if(action.equals("updateId") || action.equals("updateDriverLicence")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			String imageFront = jsonObject.get("imageFront").getAsString();
+			String imageBack = jsonObject.get("imageBack").getAsString();
+			byte[] photoFront = null;
+			byte[] photoBack = null;
+			if (imageFront != null && !imageFront.isEmpty() && imageBack != null && !imageBack.isEmpty()) {
+				photoFront = Base64.getMimeDecoder().decode(imageFront);
+				photoBack = Base64.getMimeDecoder().decode(imageBack);
+			}
+			int count = 0;
+			count = driverDao.updateTwoPhoto(driver_id, photoFront, photoBack, action);
+			writeText(response, String.valueOf(count));
+		} else if(action.equals("getStatus")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			String[] status = {"","","", ""};
+			status = driverDao.getStatus(driver_id, status);
+			writeText(response, gson.toJson(status));
+		} else if (action.equals("findUserById")){
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			Driver driver = driverDao.findUserById(driver_id);
+			writeText(response, gson.toJson(driver));	
 		} else {
 			writeText(response, "");
 		}
