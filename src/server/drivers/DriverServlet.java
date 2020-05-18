@@ -77,11 +77,11 @@ public class DriverServlet extends HttpServlet {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.findById(driver_id);
 			writeText(response, gson.toJson(driver));
-		}  else if (action.equals("getUserInfo")) {
+		} else if (action.equals("getUserInfo")) {
 			String driver_email = jsonObject.get("email").getAsString();
 			Driver driver = driverDao.getUserInfo(driver_email);
 			writeText(response, gson.toJson(driver));
-		}else if (action.equals("getInformation")) {
+		} else if (action.equals("getInformation")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getInformation(driver_id);
 			writeText(response, gson.toJson(driver));
@@ -103,6 +103,7 @@ public class DriverServlet extends HttpServlet {
 			byte[] licenseFront = null;
 			byte[] licenseBack = null;
 			byte[] driverSecure = null;
+			byte[] userPhoto = null;
 			// 檢查是否有上傳圖片
 			if (jsonObject.get("imageBase64") != null) {// 有圖不是空值
 				String imageBase64 = jsonObject.get("imageBase64").getAsString();// 取出來
@@ -134,21 +135,27 @@ public class DriverServlet extends HttpServlet {
 					driverSecure = Base64.getMimeDecoder().decode(driverSecureBase64);
 				}
 			}
+			if (jsonObject.get("userPhotoBase64") != null) {
+				String userPhotoBase64 = jsonObject.get("userPhotoBase64").getAsString();
+				if (userPhotoBase64 != null && !userPhotoBase64.isEmpty()) {
+					userPhoto = Base64.getMimeDecoder().decode(userPhotoBase64);
+				}
+			}
 			int count = 0;
-			count = driverDao.signUp(driver, idFront, idBack, licenseFront, licenseBack, driverSecure);
+			count = driverDao.signUp(driver, idFront, idBack, licenseFront, licenseBack, driverSecure, userPhoto);
 			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
 
-		} else if(action.equals("getOrders")){
+		} else if (action.equals("getOrders")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			List<Order> orders = driverDao.getOrders(driver_id);
 			writeText(response, gson.toJson(orders));
-		}  else if(action.equals("updateUserData")) {
+		} else if (action.equals("updateUserData")) {
 			String driverJson = jsonObject.get("driver").getAsString();
 			Driver driver = gson.fromJson(driverJson, Driver.class);
 			int count = 0;
 			count = driverDao.updateUserData(driver);
 			writeText(response, String.valueOf(count));
-		} else if(action.equals("updateUserPhoto")) {
+		} else if (action.equals("updateUserPhoto")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			String image = jsonObject.get("imageBase64").getAsString();
 			byte[] userPhoto = null;
@@ -158,7 +165,7 @@ public class DriverServlet extends HttpServlet {
 			int count = 0;
 			count = driverDao.updateUserPhoto(driver_id, userPhoto);
 			writeText(response, String.valueOf(count));
-		}else if(action.equals("updateInsurance")) {
+		} else if (action.equals("updateInsurance")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			String image = jsonObject.get("imageBase64").getAsString();
 			String expireDate = jsonObject.get("expireDate").getAsString();
@@ -169,7 +176,7 @@ public class DriverServlet extends HttpServlet {
 			int count = 0;
 			count = driverDao.updateInsurance(driver_id, insurancePhoto, expireDate);
 			writeText(response, String.valueOf(count));
-		} else if(action.equals("updateId") || action.equals("updateDriverLicence")) {
+		} else if (action.equals("updateId") || action.equals("updateDriverLicence")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			String imageFront = jsonObject.get("imageFront").getAsString();
 			String imageBack = jsonObject.get("imageBack").getAsString();
@@ -182,15 +189,15 @@ public class DriverServlet extends HttpServlet {
 			int count = 0;
 			count = driverDao.updateTwoPhoto(driver_id, photoFront, photoBack, action);
 			writeText(response, String.valueOf(count));
-		} else if(action.equals("getStatus")) {
+		} else if (action.equals("getStatus")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
-			String[] status = {"","","", ""};
+			String[] status = { "", "", "", "" };
 			status = driverDao.getStatus(driver_id, status);
 			writeText(response, gson.toJson(status));
-		} else if (action.equals("findUserById")){
+		} else if (action.equals("findUserById")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.findUserById(driver_id);
-			writeText(response, gson.toJson(driver));	
+			writeText(response, gson.toJson(driver));
 		} else {
 			writeText(response, "");
 		}

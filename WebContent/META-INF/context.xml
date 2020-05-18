@@ -13,7 +13,7 @@
 		driverClassName="com.mysql.cj.jdbc.Driver"
 		url="jdbc:mysql://localhost:3306/Customers" 
 		username="root"
-		password="Ru045j6vu4" 
+		password="12345678" 
 		maxTotal="20" 
 		maxIdle="10" 
 		maxWaitMillis="5000"/>
