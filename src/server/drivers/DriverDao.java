@@ -18,6 +18,8 @@ public interface DriverDao {
 	Driver getUserInfo(String driver_email);
 
 	Driver getInformation(int driver_id);
+	
+	Driver getBankInformation(int driver_id);
 
 	List<Driver> getAll();
 
@@ -36,6 +38,8 @@ public interface DriverDao {
 	int updateInsurance(int driver_id, byte[] insurancePhoto, String expireDate);
 
 	int updateTwoPhoto(int driver_id, byte[] imageFront, byte[] imageBack, String action);
+	
+	int updateUserBankData(Driver driver);
 
 	String[] getStatus(int driver_id, String[] status);
 

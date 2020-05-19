@@ -25,6 +25,13 @@ public class Driver {
 		this.driver_phone = driver_phone;
 	}
 
+	public Driver(String driver_bank_name, String driver_bank_account, String driver_bank_code) {
+		this.driver_bank_name = driver_bank_name;
+		this.driver_bank_account = driver_bank_account;
+		this.driver_bank_code = driver_bank_code;
+	}
+	
+
 	public Driver(int driver_id, double driver_longitude, double driver_latitude) {
 		this.driver_id = driver_id;
 		this.driver_longitude = driver_longitude;

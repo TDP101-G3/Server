@@ -85,7 +85,11 @@ public class DriverServlet extends HttpServlet {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getInformation(driver_id);
 			writeText(response, gson.toJson(driver));
-		} else if (action.equals("getLocation")) {
+		} else if (action.equals("getBankInformation")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			Driver driver = driverDao.getBankInformation(driver_id);
+			writeText(response, gson.toJson(driver));
+		}else if (action.equals("getLocation")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Driver driver = driverDao.getLocation(driver_id);
 			writeText(response, gson.toJson(driver));
@@ -154,6 +158,12 @@ public class DriverServlet extends HttpServlet {
 			Driver driver = gson.fromJson(driverJson, Driver.class);
 			int count = 0;
 			count = driverDao.updateUserData(driver);
+			writeText(response, String.valueOf(count));
+		} else if (action.equals("updateUserBankData")) {
+			String driverJson = jsonObject.get("driver").getAsString();
+			Driver driver = gson.fromJson(driverJson, Driver.class);
+			int count = 0;
+			count = driverDao.updateUserBankData(driver);
 			writeText(response, String.valueOf(count));
 		} else if (action.equals("updateUserPhoto")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
