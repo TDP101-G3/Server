@@ -114,6 +114,7 @@ public class CustomerServlet extends HttpServlet {
 			byte[] carDamage = null;
 			byte[] compulsory = null;
 			byte[] carThirdParty = null;
+			byte[] userPhoto = null;
 			// 檢查是否有上傳圖片
 			if (jsonObject.get("imageBase64") != null) {// 有圖不是空值
 				String imageBase64 = jsonObject.get("imageBase64").getAsString();// 取出來
@@ -145,8 +146,14 @@ public class CustomerServlet extends HttpServlet {
 					carThirdParty = Base64.getMimeDecoder().decode(carThirdPartyBase64);
 				}
 			}
+			if (jsonObject.get("userPhotoBase64") != null) {
+				String userPhotoBase64 = jsonObject.get("userPhotoBase64").getAsString();
+				if (userPhotoBase64 != null && !userPhotoBase64.isEmpty()) {
+					userPhoto = Base64.getMimeDecoder().decode(userPhotoBase64);
+				}
+			}
 			int count = 0;
-			count = customerDao.signUp(customer, idFront, idBack, carDamage, compulsory, carThirdParty);
+			count = customerDao.signUp(customer, idFront, idBack, carDamage, compulsory, carThirdParty, userPhoto);
 			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
 
 		} else if(action.equals("getOrders")){

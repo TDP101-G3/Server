@@ -160,6 +160,30 @@ public class DriverDaoMySqlImpl implements DriverDao {
 		}
 		return driver;
 	}
+	
+	@Override
+	public Driver getBankInformation(int driver_id) {
+		String sql = "SELECT driver_bank_name, driver_bank_account, driver_bank_code FROM Driver WHERE driver_id = ?;";
+		Driver driver = null;
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, driver_id);
+			/*
+			 * 當Statement關閉，ResultSet也會自動關閉， 可以不需要將ResultSet宣告置入try with
+			 * resources小括號內，參看ResultSet說明
+			 */
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				String driver_bank_name = rs.getString(1);
+				String driver_bank_account = rs.getString(2);
+				String driver_bank_code = rs.getString(3);
+				driver = new Driver(driver_bank_name, driver_bank_account, driver_bank_code);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return driver;
+	}
 
 	@Override
 	public List<Driver> getAll() {
@@ -226,11 +250,11 @@ public class DriverDaoMySqlImpl implements DriverDao {
 
 	@Override
 	public int signUp(Driver driver, byte[] idFront, byte[] idBack, byte[] licenseFront, byte[] licenseBack,
-			byte[] driverSecure) {
+			byte[] driverSecure, byte[] userPhoto) {
 		int count = 0;
 		String sql = "INSERT INTO Driver"
-				+ "(driver_name, driver_email, driver_password, driver_phone,driver_bank_name, driver_bank_account, driver_bank_code, driver_identify_front, driver_identify_back, driver_license_front, driver_license_back,driver_liability_insurance) "
-				+ "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+				+ "(driver_name, driver_email, driver_password, driver_phone,driver_bank_name, driver_bank_account, driver_bank_code, driver_identify_front, driver_identify_back, driver_license_front, driver_license_back,driver_liability_insurance, driver_photo) "
+				+ "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		try (Connection connection = dataSource.getConnection(); // 拿到連線池中的連線
 				PreparedStatement ps = connection.prepareStatement(sql);) {
 			ps.setString(1, driver.getDriver_name());
@@ -245,6 +269,7 @@ public class DriverDaoMySqlImpl implements DriverDao {
 			ps.setBytes(10, licenseFront);
 			ps.setBytes(11, licenseBack);
 			ps.setBytes(12, driverSecure);
+			ps.setBytes(13, userPhoto);
 
 			count = ps.executeUpdate();// 異動結果
 			System.out.println("count: " + count);
@@ -363,6 +388,24 @@ public class DriverDaoMySqlImpl implements DriverDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return count;
+	}
+	
+	@Override
+	public int updateUserBankData (Driver driver) {
+		int count = 0;
+		String sql = "";	
+		sql = "UPDATE Driver SET driver_bank_name = ?, driver_bank_account = ?, driver_bank_code = ? WHERE driver_id = ?;";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setString(1, driver.getDriver_bank_name());
+			ps.setString(2, driver.getDriver_bank_account());
+			ps.setString(3, driver.getDriver_bank_code());
+			ps.setInt(4, driver.getDriver_id());
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
 		return count;
 	}
 	

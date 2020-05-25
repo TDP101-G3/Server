@@ -30,6 +30,6 @@ public interface CustomerDao {
 	
 	int loginCheck (String customer_email, String customer_password);
 	
-	int signUp (Customer customer, byte[] idFront, byte[] idBack, byte[] carDamage, byte[] compulsory, byte[] carThirdParty);
+	int signUp (Customer customer, byte[] idFront, byte[] idBack, byte[] carDamage, byte[] compulsory, byte[] carThirdParty, byte[] userPhoto);
 
 }

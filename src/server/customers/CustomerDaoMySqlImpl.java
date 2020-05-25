@@ -323,11 +323,11 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	}
 
 	@Override
-	public int signUp(Customer customer, byte[] idFront, byte[] idBack, byte[] carDamage, byte[] compulsory, byte[] carThirdParty) {
+	public int signUp(Customer customer, byte[] idFront, byte[] idBack, byte[] carDamage, byte[] compulsory, byte[] carThirdParty,byte[] userPhoto) {
 		int count = 0;
 		String sql = "INSERT INTO Customer"
-				+ "(customer_name, customer_email, customer_password, customer_phone, customer_number_plate, customer_car_model, customer_car_color,customer_identify_front,customer_identify_back,customer_car_insurance,customer_compulsory_insurance,customer_third_insurance) "
-				+ "VALUES(?, ?, ?, ?, ?, ?, ?,?,?,?,?,?);";
+				+ "(customer_name, customer_email, customer_password, customer_phone, customer_number_plate, customer_car_model, customer_car_color,customer_identify_front,customer_identify_back,customer_car_insurance,customer_compulsory_insurance,customer_third_insurance, customer_photo) "
+				+ "VALUES(?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?);";
 		try (Connection connection = dataSource.getConnection(); // 拿到連線池中的連線
 				PreparedStatement ps = connection.prepareStatement(sql);) {
 			ps.setString(1, customer.getCustomer_name());
@@ -342,6 +342,7 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 			ps.setBytes(10, carDamage);
 			ps.setBytes(11, compulsory);
 			ps.setBytes(12, carThirdParty);
+			ps.setBytes(13, userPhoto);
 			count = ps.executeUpdate();// 異動結果
 			System.out.println("count: " + count);
 		} catch (SQLException e) {
