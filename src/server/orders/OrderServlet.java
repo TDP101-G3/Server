@@ -78,6 +78,11 @@ public class OrderServlet extends HttpServlet {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			Order2 order2 = orderDao.getDriver_score(driver_id);
 			writeText(response, gson.toJson(order2));
+		} else if(action.equals("getOrders")){
+			int id = jsonObject.get("id").getAsInt();
+			String role = jsonObject.get("role").getAsString();
+			List<Order> orders = orderDao.getOrders(id,role);
+			writeText(response, gson.toJson(orders));
 		} else {
 			writeText(response, "");
 		}

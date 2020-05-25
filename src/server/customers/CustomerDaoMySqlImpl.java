@@ -352,7 +352,7 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 	
 	@Override
 	public List<Order> getOrders(int customer_id) {
-		String sql = "SELECT order_id, driver_id, order_time, order_start, order_end, driver_score, customer_score, order_money " 
+		String sql = "SELECT order_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, order_money, start_longitude, start_latitude, end_longitude, end_latitude " 
 				+ "FROM Order_detail WHERE customer_id = ?;";
 		List<Order> orderList = new ArrayList<Order>();
 		try (Connection connection = dataSource.getConnection();
@@ -368,8 +368,16 @@ public class CustomerDaoMySqlImpl implements CustomerDao{
 				double driver_score = rs.getDouble(6);
 				double customer_score = rs.getDouble(7);
 				double order_money = rs.getDouble(8);
-				Order order = new Order(order_id, customer_id, driver_id, order_time, order_start, order_end, driver_score, customer_score, order_money);
-				orderList.add(order);
+				double start_longitude = rs.getDouble(9);
+			    double start_latitude = rs.getDouble(10);
+			    double end_longitude = rs.getDouble(11);
+			    double end_latitude = rs.getDouble(12);
+			    
+				if(Double.toString(customer_score)!=null) {
+					Order order = new Order(order_id, driver_id, customer_id, order_start, order_end, driver_score, customer_score
+							, order_money, order_time, start_longitude, start_latitude, end_longitude, end_latitude);
+					orderList.add(order);
+				}	
 			} 
 			return orderList;
 		} catch (SQLException e) {

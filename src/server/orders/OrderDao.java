@@ -10,6 +10,8 @@ public interface OrderDao {
 	int insert(Order order);
 	
 	List<Order> getAll();
+
+	List<Order> getOrders(int id, String role);
 	
 	int getOrderId(int driver_id);
 	

@@ -192,4 +192,48 @@ public class OrderDaoMySqlImpl implements OrderDao{
 		} 
 		return orderList;
 	}
+	@Override
+	public List<Order> getOrders(int id, String role) {
+		
+		String sql = "SELECT order_id, driver_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, order_money, start_longitude, start_latitude, end_longitude, end_latitude ";
+		if(role.equals("driver")) {
+			sql += "FROM Order_detail WHERE driver_id = ?;";
+		} else {
+			sql += "FROM Order_detail WHERE customer_id = ?;";
+		}
+		List<Order> orderList = new ArrayList<Order>();
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				int order_id = rs.getInt(1);
+				int driver_id = rs.getInt(2);
+				int customer_id = rs.getInt(3);
+				String order_time = rs.getString(4);
+				String order_start = rs.getString(5);
+				String order_end = rs.getString(6);
+				double driver_score = rs.getDouble(7);
+				double customer_score = rs.getDouble(8);
+				if(customer_score<=0) {
+					System.out.println("order id " + order_id + " is empty.");
+					continue;
+				}
+				double order_money = rs.getDouble(9);
+				double start_longitude = rs.getDouble(10);
+			    double start_latitude = rs.getDouble(11);
+			    double end_longitude = rs.getDouble(12);
+			    double end_latitude = rs.getDouble(13);
+			    
+				Order order = new Order(order_id, driver_id, customer_id, order_start, order_end, driver_score, customer_score
+							, order_money, order_time, start_longitude, start_latitude, end_longitude, end_latitude);
+				orderList.add(order);
+			}
+			return orderList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return orderList;
+	}
 }

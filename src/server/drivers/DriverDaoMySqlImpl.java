@@ -256,13 +256,14 @@ public class DriverDaoMySqlImpl implements DriverDao {
 	
 	@Override
 	public List<Order> getOrders(int driver_id) {
-		String sql = "SELECT order_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, order_money " 
+		String sql = "SELECT order_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, order_money, start_longitude, start_latitude, end_longitude, end_latitude " 
 				+ "FROM Order_detail WHERE driver_id = ?;";
 		List<Order> orderList = new ArrayList<Order>();
 		try (Connection connection = dataSource.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql);) {
 			ps.setInt(1, driver_id);
 			ResultSet rs = ps.executeQuery();
+			
 			while (rs.next()) {
 				int order_id = rs.getInt(1);
 				int customer_id = rs.getInt(2);
@@ -271,9 +272,19 @@ public class DriverDaoMySqlImpl implements DriverDao {
 				String order_end = rs.getString(5);
 				double driver_score = rs.getDouble(6);
 				double customer_score = rs.getDouble(7);
+				if(customer_score<=0) {
+					System.out.println("order id " + order_id + " is empty.");
+					continue;
+				}
 				double order_money = rs.getDouble(8);
-				Order order = new Order(order_id, customer_id, driver_id, order_time, order_start, order_end, driver_score, customer_score, order_money);
+				double start_longitude = rs.getDouble(9);
+			    double start_latitude = rs.getDouble(10);
+			    double end_longitude = rs.getDouble(11);
+			    double end_latitude = rs.getDouble(12);
+				Order order = new Order(order_id, driver_id, customer_id, order_start, order_end, driver_score, customer_score
+						, order_money, order_time, start_longitude, start_latitude, end_longitude, end_latitude);
 				orderList.add(order);
+			
 			}
 			return orderList;
 		} catch (SQLException e) {

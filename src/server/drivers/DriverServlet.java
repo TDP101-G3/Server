@@ -139,7 +139,7 @@ public class DriverServlet extends HttpServlet {
 			writeText(response, String.valueOf(count));// 轉成字串送回去使用者那邊insertfragment
 
 		} else if(action.equals("getOrders")){
-			int driver_id = jsonObject.get("driver_id").getAsInt();
+			int driver_id = jsonObject.get("id").getAsInt();
 			List<Order> orders = driverDao.getOrders(driver_id);
 			writeText(response, gson.toJson(orders));
 		}  else if(action.equals("updateUserData")) {
