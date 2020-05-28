@@ -150,5 +150,10 @@ public class Order {
     public void setEnd_latitude(double end_latitude) {
         this.end_latitude = end_latitude;
     }
-	
+    public String getOrder_time() {
+		return order_time;
+	}
+	public void setOrder_time(String order_time) {
+		this.order_time = order_time;
+	}
 }

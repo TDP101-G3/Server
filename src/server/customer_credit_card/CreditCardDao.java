@@ -1,7 +1,5 @@
 package server.customer_credit_card;
 
-import java.util.List;
-
 public interface CreditCardDao {
 	
 	CreditCardServerMessage insert(CreditCard creditCard);

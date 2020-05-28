@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import server.drivers.Driver;
 import server.main.ImageUtil;
 import server.orders.Order;
 

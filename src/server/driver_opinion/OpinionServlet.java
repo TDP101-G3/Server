@@ -1,4 +1,4 @@
-package server.managers;
+package server.driver_opinion;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,14 +14,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 
+
 @SuppressWarnings("serial")
-@WebServlet("/ManagerServlet")
-public class ManagerServlet extends HttpServlet {
+@WebServlet("/OpinionServlet")
+public class OpinionServlet extends HttpServlet {
 	private final static String CONTENT_TYPE = "text/html; charset=utf-8";
-	ManagerDao managerDao = null;
-    
+	OpinionDao opinionDao = null;
+   
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		request.setCharacterEncoding("utf-8");
 		Gson gson = new Gson();
 		BufferedReader br = request.getReader();
 		StringBuilder jsonIn = new StringBuilder();
@@ -33,19 +35,30 @@ public class ManagerServlet extends HttpServlet {
 		System.out.println("input: " + jsonIn);
 
 		JsonObject jsonObject = gson.fromJson(jsonIn.toString(), JsonObject.class);
-		if (managerDao == null) {
-			managerDao = new ManagerDaoMySqlImpl();
+		if (opinionDao == null) {
+			opinionDao = new OpinionDaoMySqlImpl();
 		}
 
 		String action = jsonObject.get("action").getAsString();
-		if (action.equals("loginCheck")) {
-			String driver_account = jsonObject.get("account").getAsString();
-			String driver_password = jsonObject.get("password").getAsString();
-			int driver = managerDao.loginCheck(driver_account, driver_password);
-			writeText(response, String.valueOf(driver));
-		}
+		if (action.equals("opinionInsert") || action.equals("opinionUpdate")) {
+			String opinionJson = jsonObject.get("opinion").getAsString();
+			System.out.println("opinionJson = " + opinionJson);
+			Opinion opinion = gson.fromJson(opinionJson, Opinion.class);
+			int count = 0;
+			if (action.equals("opinionInsert")) {
+				count = opinionDao.insert(opinion);
+			} else if (action.equals("opinionUpdate")) {
+				count = opinionDao.update(opinion);
+			}
+			writeText(response, String.valueOf(count));
+		}	
 	}
-   
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+	
 	private void writeText(HttpServletResponse response, String outText) throws IOException {
 		response.setContentType(CONTENT_TYPE);
 		PrintWriter out = response.getWriter();
@@ -53,10 +66,7 @@ public class ManagerServlet extends HttpServlet {
 		// 將輸出資料列印出來除錯用
 		System.out.println("output: " + outText);
 	}
-
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-	}
 	
+
 
 }
