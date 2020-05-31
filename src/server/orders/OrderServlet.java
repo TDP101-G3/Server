@@ -83,7 +83,37 @@ public class OrderServlet extends HttpServlet {
 			String role = jsonObject.get("role").getAsString();
 			List<Order> orders = orderDao.getOrders(id,role);
 			writeText(response, gson.toJson(orders));
-		} else {
+		} else if (action.equals("incomeWeekAll")) {
+		    int driver_id = jsonObject.get("driver_id").getAsInt();
+		    int yearNumber = jsonObject.get("yearNumber").getAsInt();
+		    int weekNumber = jsonObject.get("weekNumber").getAsInt();
+			Order order = orderDao.incomeWeekAll(driver_id, yearNumber, weekNumber);
+			writeText(response, gson.toJson(order));
+		}  else if (action.equals("getIncomeweekdaily")) {
+		    int driver_id = jsonObject.get("driver_id").getAsInt();
+		    int yearNumber = jsonObject.get("yearNumber").getAsInt();
+		    int weekNumber = jsonObject.get("weekNumber").getAsInt();
+		    int driver_id_2 = jsonObject.get("driver_id_2").getAsInt();
+		    int yearNumber_2 = jsonObject.get("yearNumber_2").getAsInt();
+		    int weekNumber_2 = jsonObject.get("weekNumber_2").getAsInt();
+		    int driver_id_3 = jsonObject.get("driver_id_3").getAsInt();
+		    int yearNumber_3 = jsonObject.get("yearNumber_3").getAsInt();
+		    int weekNumber_3 = jsonObject.get("weekNumber_3").getAsInt();
+		    int driver_id_4 = jsonObject.get("driver_id_4").getAsInt();
+		    int yearNumber_4 = jsonObject.get("yearNumber_4").getAsInt();
+		    int weekNumber_4 = jsonObject.get("weekNumber_4").getAsInt();
+		    int driver_id_5 = jsonObject.get("driver_id_5").getAsInt();
+		    int yearNumber_5 = jsonObject.get("yearNumber_5").getAsInt();
+		    int weekNumber_5 = jsonObject.get("weekNumber_5").getAsInt();
+		    int driver_id_6 = jsonObject.get("driver_id_6").getAsInt();
+		    int yearNumber_6 = jsonObject.get("yearNumber_6").getAsInt();
+		    int weekNumber_6 = jsonObject.get("weekNumber_6").getAsInt();
+		    int driver_id_7 = jsonObject.get("driver_id_7").getAsInt();
+		    int yearNumber_7 = jsonObject.get("yearNumber_7").getAsInt();
+		    int weekNumber_7 = jsonObject.get("weekNumber_7").getAsInt();
+			Order order = orderDao.getIncomeweekdaily(driver_id, yearNumber, weekNumber,driver_id_2, yearNumber_2, weekNumber_2,driver_id_3, yearNumber_3, weekNumber_3, driver_id_4, yearNumber_4, weekNumber_4, driver_id_5,  yearNumber_5,  weekNumber_5, driver_id_6,  yearNumber_6,  weekNumber_6, driver_id_7,  yearNumber_7, weekNumber_7);
+			writeText(response, gson.toJson(order));
+		}else {
 			writeText(response, "");
 		}
 	}
