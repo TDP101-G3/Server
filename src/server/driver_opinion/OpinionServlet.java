@@ -3,6 +3,7 @@ package server.driver_opinion;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -51,7 +52,11 @@ public class OpinionServlet extends HttpServlet {
 				count = opinionDao.update(opinion);
 			}
 			writeText(response, String.valueOf(count));
-		}	
+		}else if (action.equals("findById")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			List<Opinion> opinion = opinionDao.findById(driver_id);
+			writeText(response, gson.toJson(opinion));
+		}
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
