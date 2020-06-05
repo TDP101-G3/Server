@@ -18,7 +18,13 @@ public class Opinion {
         this.driver_opinion_question = driver_opinion_question;
     }
 
-    public int getDriver_opinion_id() {
+    public Opinion(String driver_opinion_question, String driver_opinion_answer) {
+		super();
+		this.driver_opinion_question = driver_opinion_question;
+		this.driver_opinion_answer = driver_opinion_answer;
+	}
+
+	public int getDriver_opinion_id() {
         return driver_opinion_id;
     }
 

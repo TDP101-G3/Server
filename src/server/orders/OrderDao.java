@@ -9,6 +9,8 @@ public interface OrderDao {
 	
 	int insert(Order order);
 	
+	int orderinsert(Order order);
+	
 	List<Order> getAll();
 
 	List<Order> getOrders(int id, String role);

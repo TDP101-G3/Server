@@ -54,7 +54,7 @@ public class OrderServlet extends HttpServlet {
 			Order order = gson.fromJson(orderJson, Order.class);
 			int count = 0;
 			if (action.equals("orderInsert")) {
-				count = orderDao.insert(order);
+				count = orderDao.orderinsert(order);
 			} else if (action.equals("customer_scoreUpdate")) {
 				count = orderDao.updateCustomer_score(order);
 			}

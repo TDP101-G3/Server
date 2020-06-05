@@ -14,7 +14,8 @@ public class Order {
     private double start_latitude;
     private double end_longitude;
     private double end_latitude;
-
+    private double driver_income;
+    
     private int yearNumber;
     private int weekNumber;
     private int week_order_number;
@@ -65,6 +66,19 @@ public class Order {
 		this.order_start = order_start;
 	    this.order_end = order_end;
 	}
+	
+	public Order(int customer_id, int driver_id, String order_start, String order_end, double order_money,double driver_income,double start_longitude,double start_latitude,double end_longitude,double end_latitude){
+        this.customer_id = customer_id;
+        this.driver_id = driver_id;
+        this.order_start = order_start;
+        this.order_end = order_end;
+        this.order_money = order_money;
+        this.driver_income = driver_income;
+        this.start_longitude = start_longitude;
+        this.start_latitude = start_latitude;
+        this.end_longitude = end_longitude;
+        this.end_latitude = end_latitude;
+    }
 	
 	public Order(int order_id, int customer_id, int driver_id, String order_time, String order_start, String order_end, double driver_score, double customer_score, double order_money){
         this.order_id = order_id;
@@ -235,10 +249,16 @@ public class Order {
 	public void setOrder_time(String order_time) {
 		this.order_time = order_time;
 	}
+	public double getDriver_income() {
+        return driver_income;
+    }
+
+    public void setDriver_income(double driver_income) {
+        this.driver_income = driver_income;
+    }
     public int getYearNumber() {
         return yearNumber;
     }
-
     public void setYearNumber(int yearNumber) {
         this.yearNumber = yearNumber;
     }

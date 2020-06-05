@@ -171,6 +171,31 @@ public class OrderDaoMySqlImpl implements OrderDao{
 	}
 	
 	@Override
+	public int orderinsert(Order order) {
+		int count = 0;
+		String sql = "INSERT INTO Order_detail" + 
+				"(customer_id, driver_id, order_start, order_end, order_money, driver_income, start_longitude, start_latitude, end_longitude, end_latitude) "	+ 
+				"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql);) {
+			ps.setInt(1, order.getCustomer_id());
+			ps.setInt(2, order.getDriver_id());
+			ps.setString(3, order.getOrder_start());
+			ps.setString(4, order.getOrder_end());
+			ps.setDouble(5, order.getOrder_money());
+			ps.setDouble(6, order.getDriver_income());
+			ps.setDouble(7, order.getStart_longitude());
+			ps.setDouble(8, order.getStart_latitude());
+			ps.setDouble(9, order.getEnd_longitude());
+			ps.setDouble(10, order.getEnd_latitude());
+			count = ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	@Override
 	public List<Order> getAll() {
 		String sql = "SELECT customer_id, driver_id, order_start, order_end " 
 				+ "FROM Order_detail;";
@@ -239,7 +264,7 @@ public class OrderDaoMySqlImpl implements OrderDao{
 
 	@Override
 	public Order incomeWeekAll(int driver_id, int yearNumber, int weekNumber) {
-		String sql = "select count(order_id) as week_order_number, sum(order_money) as week_order_money from Order_detail where  driver_id= ? and year(order_time) = ? and week(order_time,1)= ?;";
+		String sql = "select count(order_id) as week_order_number, sum(order_money) as week_order_money from Order_detail where  driver_id= ? and year(order_time) = ? and week(order_time,1)= ? and driver_score != 0;";
 		Order order = null;
 //		System.out.println("driver_id"+ driver_id);
 //		System.out.println("yearNumber"+ yearNumber);
@@ -273,13 +298,13 @@ public class OrderDaoMySqlImpl implements OrderDao{
 			int driver_id_4, int yearNumber_4, int weekNumber_4,
 			int driver_id_5, int yearNumber_5, int weekNumber_5,int driver_id_6, int yearNumber_6, int weekNumber_6,int driver_id_7, int yearNumber_7, int weekNumber_7) {
 		String sql = "select"+
-				"(count(case when weekday(order_time) = 0 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  then 0 else null end)) as monday_order_number,"+
-				"(count(case when weekday(order_time) = 1 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  then 0 else null end)) as tuesday_order_number,"+
-				"(count(case when weekday(order_time) = 2 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  then 0 else null end)) as wednesday_order_number,"+
-				"(count(case when weekday(order_time) = 3 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  then 0 else null end)) as thursday_order_number,"+
-				"(count(case when weekday(order_time) = 4 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  then 0 else null end)) as friday_order_number,"+
-				"(count(case when weekday(order_time) = 5 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  then 0 else null end)) as saturday_order_number,"+
-				"(count(case when weekday(order_time) = 6 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  then 0 else null end)) as sunday_order_number from Order_detail;";
+				"(count(case when weekday(order_time) = 0 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ? and driver_score != 0 then 0 else null end)) as monday_order_number,"+
+				"(count(case when weekday(order_time) = 1 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  and driver_score != 0 then 0 else null end)) as tuesday_order_number,"+
+				"(count(case when weekday(order_time) = 2 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  and driver_score != 0 then 0 else null end)) as wednesday_order_number,"+
+				"(count(case when weekday(order_time) = 3 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  and driver_score != 0 then 0 else null end)) as thursday_order_number,"+
+				"(count(case when weekday(order_time) = 4 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  and driver_score != 0 then 0 else null end)) as friday_order_number,"+
+				"(count(case when weekday(order_time) = 5 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  and driver_score != 0 then 0 else null end)) as saturday_order_number,"+
+				"(count(case when weekday(order_time) = 6 and driver_id= ? and year(order_time) = ? and week(order_time,1)= ?  and driver_score != 0 then 0 else null end)) as sunday_order_number from Order_detail;";
 		Order order = null;
 		try (Connection connection = dataSource.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql);) {
