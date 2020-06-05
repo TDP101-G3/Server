@@ -53,6 +53,7 @@ public class OpinionServlet extends HttpServlet {
 				count = opinionDao.CustomeropinionInsert(opinion1);
 			}
 			writeText(response, String.valueOf(count));
+<<<<<<< HEAD
 		}else if (action.equals("DriverfindById")) {
 			int driver_id = jsonObject.get("driver_id").getAsInt();
 			List<Opinion> opinion = opinionDao.DriverfindById(driver_id);
@@ -61,6 +62,12 @@ public class OpinionServlet extends HttpServlet {
 			int customer_id = jsonObject.get("customer_id").getAsInt();
 			List<Opinion1> opinion1 = opinionDao.CustomerfindById(customer_id);
 			writeText(response, gson.toJson(opinion1));
+=======
+		}else if (action.equals("findById")) {
+			int driver_id = jsonObject.get("driver_id").getAsInt();
+			List<Opinion> opinion = opinionDao.findById(driver_id);
+			writeText(response, gson.toJson(opinion));
+>>>>>>> 5d14a5ac972862762be1d751b1c3609b63b7b375
 		}
 	}
 	
