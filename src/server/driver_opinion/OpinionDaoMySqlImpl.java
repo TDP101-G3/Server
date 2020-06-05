@@ -18,11 +18,7 @@ public class OpinionDaoMySqlImpl implements OpinionDao{
 	}
 	
 	@Override
-<<<<<<< HEAD
 	public List<Opinion> DriverfindById(int driver_id) {
-=======
-	public List<Opinion> findById(int driver_id) {
->>>>>>> 5d14a5ac972862762be1d751b1c3609b63b7b375
 		String sql = "SELECT driver_opinion_question, driver_opinion_answer FROM Driver_opinion WHERE driver_id = ?;";
 		List<Opinion> opinionList = new ArrayList<Opinion>();
 		try (Connection connection = dataSource.getConnection();
@@ -46,7 +42,6 @@ public class OpinionDaoMySqlImpl implements OpinionDao{
 	}
 	
 	@Override
-<<<<<<< HEAD
 	public List<Opinion1> CustomerfindById(int customer_id) {
 		String sql = "SELECT customer_opinion_question, customer_opinion_answer FROM Customer_opinion WHERE customer_id = ?;";
 		List<Opinion1> opinionList = new ArrayList<Opinion1>();
@@ -72,9 +67,6 @@ public class OpinionDaoMySqlImpl implements OpinionDao{
 	
 	@Override
 	public int DriveropinionInsert(Opinion opinion) {
-=======
-	public int insert(Opinion opinion) {
->>>>>>> 5d14a5ac972862762be1d751b1c3609b63b7b375
 		int count = 0;
 		String sql = "INSERT INTO Driver_opinion" + 
 				"(driver_id, driver_opinion_question) "	+ 
@@ -105,5 +97,17 @@ public class OpinionDaoMySqlImpl implements OpinionDao{
 			e.printStackTrace();
 		}
 		return count;
+	}
+
+	@Override
+	public int update(Opinion opinion) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<Opinion> findById(int driver_id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
