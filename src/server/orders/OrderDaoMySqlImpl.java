@@ -194,11 +194,12 @@ public class OrderDaoMySqlImpl implements OrderDao{
 	}
 	@Override
 	public List<Order> getOrders(int id, String role) {
-		
-		String sql = "SELECT order_id, driver_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, order_money, start_longitude, start_latitude, end_longitude, end_latitude ";
+		String sql = "";
 		if(role.equals("driver")) {
+			sql = "SELECT order_id, driver_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, driver_income, start_longitude, start_latitude, end_longitude, end_latitude ";
 			sql += "FROM Order_detail WHERE driver_id = ?;";
 		} else {
+			sql = "SELECT order_id, driver_id, customer_id, order_time, order_start, order_end, driver_score, customer_score, order_money, start_longitude, start_latitude, end_longitude, end_latitude ";
 			sql += "FROM Order_detail WHERE customer_id = ?;";
 		}
 		List<Order> orderList = new ArrayList<Order>();

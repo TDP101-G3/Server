@@ -12,8 +12,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import server.customers.Customer;
-import server.customers.Insurance;
 import server.main.ServiceLocator;
 import server.orders.Order;
 
