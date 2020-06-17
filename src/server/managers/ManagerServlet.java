@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import server.customers.Customer;
 import server.drivers.Driver;
 import server.drivers.DriverDaoMySqlImpl;
 import server.main.ImageUtil;
@@ -51,21 +54,67 @@ public class ManagerServlet extends HttpServlet {
 		} else if (action.equals("getDrivers")) {
 			List<Driver> drivers = managerDao.getDrivers();
 			writeText(response, gson.toJson(drivers));
+		} else if (action.equals("getCustomers")) {
+			List<Customer> customers = managerDao.getCustomers();
+			writeText(response, gson.toJson(customers));
 		} else if (action.equals("getImage")) {
 			OutputStream os = response.getOutputStream();
 			int id = jsonObject.get("id").getAsInt();
+			String role = jsonObject.get("role").getAsString();
 			int imageSize = jsonObject.get("imageSize").getAsInt();
-			byte[] image = managerDao.getImage(id);
+			byte[] image = managerDao.getImage(role,id);
 			if (image != null) {
 				image = ImageUtil.shrink(image, imageSize);
 				response.setContentType("image/jpeg");
 				response.setContentLength(image.length);
 				os.write(image);
 			}
+		} else if (action.equals("getImageFile")) {
+			OutputStream os = response.getOutputStream();
+			int id = jsonObject.get("id").getAsInt();
+			String role = jsonObject.get("role").getAsString();
+			int imageSize = jsonObject.get("imageSize").getAsInt();
+			String fileName = jsonObject.get("fileName").getAsString();
+			byte[] image = managerDao.getImageFile(role,id,fileName);
+			if (image != null) {
+				image = ImageUtil.shrink(image, imageSize);
+				response.setContentType("image/jpeg");
+				response.setContentLength(image.length);
+			}
+			os.write(image);
 		} else if (action.equals("getFilesStatus")) {
 			int id = jsonObject.get("id").getAsInt();
 			String jsonFilesStatus = managerDao.getFilesStatus(id);
 			writeText(response, jsonFilesStatus);
+		} else if (action.equals("updateDriverData")) {
+			String driverJson = jsonObject.get("driver").getAsString();
+			Driver driver = gson.fromJson(driverJson, Driver.class);
+			int count = 0;
+			count = managerDao.updateDriverData(driver);
+			writeText(response, String.valueOf(count));
+		} else if (action.equals("updateCustomerData")) {
+			String driverJson = jsonObject.get("customer").getAsString();
+			Customer customer = gson.fromJson(driverJson, Customer.class);
+			int count = 0;
+			count = managerDao.updateCustomerData(customer);
+			writeText(response, String.valueOf(count));
+		} else if (action.equals("updateUserPhoto")) {
+			int id = jsonObject.get("id").getAsInt();
+			String role = jsonObject.get("role").getAsString();
+			String image = jsonObject.get("imageBase64").getAsString();
+			byte[] userPhoto = null;
+			if (image != null && !image.isEmpty()) {
+				userPhoto = Base64.getMimeDecoder().decode(image);
+			}
+			int count = 0;
+			count = managerDao.updateUserPhoto(id, role, userPhoto);
+			writeText(response, String.valueOf(count));
+		} else if (action.equals("deleteUserPhoto")) {
+			int id = jsonObject.get("id").getAsInt();
+			String role = jsonObject.get("role").getAsString();
+			int count = 0;
+			count = managerDao.deleteUserPhoto(id, role);
+			writeText(response, String.valueOf(count));
 		} else {
 			writeText(response, "");
 		}
