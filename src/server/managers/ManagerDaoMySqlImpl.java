@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import server.customers.Customer;

@@ -265,7 +265,7 @@ public class OrderDaoMySqlImpl implements OrderDao{
 
 	@Override
 	public Order incomeWeekAll(int driver_id, int yearNumber, int weekNumber) {
-		String sql = "select count(order_id) as week_order_number, sum(order_money) as week_order_money from Order_detail where  driver_id= ? and year(order_time) = ? and week(order_time,1)= ? and driver_score != 0;";
+		String sql = "select count(order_id) as week_order_number, sum(driver_income) as week_order_money from Order_detail where  driver_id= ? and year(order_time) = ? and week(order_time,1)= ? and driver_score != 0;";
 		Order order = null;
 //		System.out.println("driver_id"+ driver_id);
 //		System.out.println("yearNumber"+ yearNumber);

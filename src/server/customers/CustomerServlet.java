@@ -159,7 +159,7 @@ public class CustomerServlet extends HttpServlet {
 			int customer_id = jsonObject.get("customer_id").getAsInt();
 			List<Order> orders = customerDao.getOrders(customer_id);
 			writeText(response, gson.toJson(orders));
-		}else {
+		}  else {
 			writeText(response, "");
 		}
 	}
